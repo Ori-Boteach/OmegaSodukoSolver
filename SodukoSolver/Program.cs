@@ -6,7 +6,7 @@ namespace SodukoSolver
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("my first commit!!");
+            Console.WriteLine("Now: my first commit to dev branch");
         }
     }
 }
