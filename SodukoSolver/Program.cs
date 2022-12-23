@@ -14,7 +14,15 @@
                 {
                     ui.validation();
                 }
-                catch (Exception e) // catch more specific exceptions
+                catch (NullReferenceException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                catch (InvalidInputLengthException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                catch (InvalidCastException e)
                 {
                     Console.WriteLine(e.Message);
                 }
