@@ -1,13 +1,31 @@
-﻿using System;
-
-namespace SodukoSolver
+﻿namespace SodukoSolver
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Now: my first commit to dev branch"); // This is my first commit to dev branch
+            Console.WriteLine("WELCOME TO YOUR SODUKO PUZZLE SOLVER! made by @Ori_Boteach");
+
+            bool wantsAgain = true;
+            UI ui = new UI();
+            while (wantsAgain == true)
+            {
+                try
+                {
+                    ui.validation();
+                }
+                catch (Exception e) // catch more specific exceptions
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                Console.WriteLine("\nEnter anything to solVe another soduko puzzle or 'q' to quit ");
+                ConsoleKeyInfo UserInput = Console.ReadKey();
+                string answer = UserInput.KeyChar.ToString();
+                if (answer == "q")
+                    wantsAgain = false;
+            }
+            ui.endMessage();
         }
     }
-    
 }
