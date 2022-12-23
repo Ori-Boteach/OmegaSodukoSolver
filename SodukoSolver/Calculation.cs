@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace SodukoSolver
 {
-    internal class Calculation
+    class Calculation
     {
+        public void Solve() // add documentaion
+        {
+
+        }
     }
 }
