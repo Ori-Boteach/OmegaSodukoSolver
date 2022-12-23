@@ -12,7 +12,7 @@
             {
                 try
                 {
-                    ui.validation();
+                    ui.StartAndValidation();
                 }
                 catch (NullReferenceException e)
                 {

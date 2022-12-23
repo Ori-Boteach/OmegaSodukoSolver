@@ -8,7 +8,7 @@ namespace SodukoSolver
 {
     class Calculation
     {
-        public void Solve() // add documentaion
+        public int[,] Solve(int[,] board) // add documentaion
         {
 
         }
