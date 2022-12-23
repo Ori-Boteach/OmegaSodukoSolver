@@ -32,20 +32,20 @@
 
         public void ConvertToBoard(string validInput) // converting the puzzle string to a 2D array
         {
-            int[,] InitialSodukoBoard = new int[SIZE, SIZE];
+            int[,] initialSodukoBoard = new int[SIZE, SIZE];
             
             int index = 0;
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    InitialSodukoBoard[i, j] = validInput[index] - '0';
+                    initialSodukoBoard[i, j] = validInput[index] - '0';
                     index++;
                 }
             }
 
             Calculation calculation = new Calculation();
-            int[,] solvedSodukoBoard = calculation.Solve(InitialSodukoBoard);
+            int[,] solvedSodukoBoard = calculation.SolveSudoku(initialSodukoBoard);
             SodukoResult(solvedSodukoBoard);
         }
 
