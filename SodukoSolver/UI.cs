@@ -19,14 +19,14 @@ namespace SodukoSolver
 
             // if user input's length is different than 81 (size of 9X9 cube) -> custom exception raised
             if (input.Length != 81)
-                throw new Exception("Invalid number of chars in inputted string: " + input.Length + " instead of 81"); // custom exception!
+                throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length + " instead of 81");
 
             // if char in user input isn't a valid digit -> custom exception raised
             char[] inputChars = input.ToCharArray();
             for (int i = 0; i < inputChars.Length; i++)
             {
                 if (inputChars[i] < '0' || inputChars[i] > '9')
-                    throw new Exception("Invalid char in index " + i + " of the inputted puzzle");  // custom exception!
+                    throw new InvalidCastException("Invalid char in index " + i + " of the inputted puzzle");
             }
 
             Console.WriteLine("All good!!!");
