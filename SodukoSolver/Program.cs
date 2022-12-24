@@ -27,7 +27,7 @@
                     Console.WriteLine(e.Message);
                 }
 
-                Console.WriteLine("\nEnter anything to solVe another soduko puzzle or 'q' to quit ");
+                Console.WriteLine("\nEnter anything to solve another soduko puzzle or 'q' to quit ");
                 ConsoleKeyInfo UserInput = Console.ReadKey();
                 string answer = UserInput.KeyChar.ToString();
                 if (answer == "q")
