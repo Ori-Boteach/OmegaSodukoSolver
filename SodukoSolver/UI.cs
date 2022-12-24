@@ -53,13 +53,16 @@ namespace SodukoSolver
 
         public void SodukoResult(int[,] solvedSodukoBoard)
         {
-            if (solvedSodukoBoard[0, 0] == 0) // if the first cell is 0 -> soduko is unsolvable
-                PrintBoard(solvedSodukoBoard);
-            else
+            if (solvedSodukoBoard[0, 0] == -1) // if the first cell is -1 -> soduko is unsolvable
                 Console.WriteLine("No solution found!");
+            else
+            {
+                Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
+                PrintBoard(solvedSodukoBoard);
+            }
         }
 
-        // the function that prints the solution of the given Soduko puzzle at a string format
+        // printing the solution of the given Soduko puzzle at a string format
         public void PrintBoard(int[,] solvedSodukoBoard)
         {
             string solvedSodukoString = ConvertBackToString(solvedSodukoBoard);
@@ -79,10 +82,9 @@ namespace SodukoSolver
                 }
             }
 
-            // returning the puzzle string
+            // returning the soduko string
             return solvedSodukoString.ToString();
         }
-
 
         public void endMessage() // printing to the screen the the end message
         {

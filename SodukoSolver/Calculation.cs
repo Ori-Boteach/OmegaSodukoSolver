@@ -1,15 +1,17 @@
-﻿namespace SodukoSolver
+﻿using System;
+
+namespace SodukoSolver
 {
     class Calculation
     {
         public const int SIZE = 9;
 
-        public int[,] SolveSudoku(int[,] board) // a function that solved the soduko by the backtracing algorithm -> recursively calling itself
+        public int[,] SolveSudoku(int[,] initialSodukoBoard) // solving the soduko by the backtracing algorithm -> recursively calling itself
         {
-
+            
         }
 
-        // the function that checks if it is safe to place a number in a given cell
+        // checking if it is safe to place a number in a given cell
         static bool CanBePlaced(int[,] initialSodukoBoard, int row, int col, int num)
         {
             for (int i = 0; i < SIZE; i++)
