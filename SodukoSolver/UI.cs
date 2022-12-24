@@ -1,4 +1,6 @@
-﻿namespace SodukoSolver
+﻿using System.Text;
+
+namespace SodukoSolver
 {
     public class UI
     {
@@ -54,20 +56,33 @@
             if (solvedSodukoBoard[0, 0] == 0) // if the first cell is 0 -> soduko is unsolvable
                 PrintBoard(solvedSodukoBoard);
             else
-                Console.WriteLine("No solution found");
+                Console.WriteLine("No solution found!");
         }
 
-        // the function that prints the solution of the given Soduko puzzle
-        public void PrintBoard(int[,] solvedSodukoBoard) // TODO: write more nice printing
+        // the function that prints the solution of the given Soduko puzzle at a string format
+        public void PrintBoard(int[,] solvedSodukoBoard)
         {
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                    Console.Write(solvedSodukoBoard[i, j] + " ");
-
-                Console.WriteLine();
-            }
+            string solvedSodukoString = ConvertBackToString(solvedSodukoBoard);
+            Console.WriteLine(solvedSodukoString);
         }
+
+        public string ConvertBackToString(int[,] solvedSodukoBoard) // converting a soduko represented as a 2D array to string representation
+        {
+            // creating a string builder to store the solved puzzle -> appending to it char by char
+            StringBuilder solvedSodukoString = new StringBuilder();
+
+            for (int i = 0; i < SIZE; i++)
+            {
+                for (int j = 0; j < SIZE; j++)
+                {
+                    solvedSodukoString.Append(solvedSodukoBoard[i, j]);
+                }
+            }
+
+            // returning the puzzle string
+            return solvedSodukoString.ToString();
+        }
+
 
         public void endMessage() // printing to the screen the the end message
         {
