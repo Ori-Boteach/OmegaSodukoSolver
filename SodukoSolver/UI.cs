@@ -6,6 +6,7 @@ namespace SodukoSolver
     public class UI
     {
         public const int SIZE = 9;
+        public static int[,] initialSodukoBoard = new int[SIZE, SIZE];
 
         public void StartAndValidation() // recieving the input from the user and validating it
         {
@@ -32,19 +33,17 @@ namespace SodukoSolver
                     throw new InvalidCastException("Invalid char in index " + i + " of the inputted puzzle");
             }
 
-            Console.WriteLine("your input is valid");
+            Console.WriteLine("***your input is valid!***");
 
             ConvertToBoard(input);
 
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("Time taken for the WHOLE operation: " + timeTaken.ToString(@"m\:ss\.fff"));
+            Console.WriteLine("\nTime taken for the WHOLE operation: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
         }
 
         public void ConvertToBoard(string validInput) // converting the puzzle string to a 2D array
-        {
-            int[,] initialSodukoBoard = new int[SIZE, SIZE];
-            
+        {            
             int index = 0;
             for (int i = 0; i < SIZE; i++)
             {
@@ -56,29 +55,29 @@ namespace SodukoSolver
             }
 
             Calculation calculation = new Calculation();
-            int[,] solvedSodukoBoard = calculation.SolveSudoku(initialSodukoBoard);
-            SodukoResult(solvedSodukoBoard);
+            bool answer = calculation.SolveSudoku();
+            SodukoResult(answer);
         }
 
-        public void SodukoResult(int[,] solvedSodukoBoard)
+        public void SodukoResult(bool answer)
         {
-            if (solvedSodukoBoard[0, 0] == -1) // if the first cell is -1 -> soduko is unsolvable
+            if (!answer) // if the returned value from SolveSudoku is flase -> soduko is unsolvable
                 Console.WriteLine("No solution found!");
             else
             {
                 Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
-                PrintBoard(solvedSodukoBoard);
+                PrintBoard();
             }
         }
 
         // printing the solution of the given Soduko puzzle at a string format
-        public void PrintBoard(int[,] solvedSodukoBoard)
+        public void PrintBoard()
         {
-            string solvedSodukoString = ConvertBackToString(solvedSodukoBoard);
+            string solvedSodukoString = ConvertBackToString();
             Console.WriteLine(solvedSodukoString);
         }
 
-        public string ConvertBackToString(int[,] solvedSodukoBoard) // converting a soduko represented as a 2D array to string representation
+        public string ConvertBackToString() // converting a soduko represented as a 2D array to string representation
         {
             // creating a string builder to store the solved puzzle -> appending to it char by char
             StringBuilder solvedSodukoString = new StringBuilder();
@@ -87,7 +86,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    solvedSodukoString.Append(solvedSodukoBoard[i, j]);
+                    solvedSodukoString.Append(initialSodukoBoard[i, j]);
                 }
             }
 

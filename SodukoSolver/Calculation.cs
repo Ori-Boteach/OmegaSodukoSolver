@@ -1,39 +1,75 @@
-﻿using System;
-
-namespace SodukoSolver
+﻿namespace SodukoSolver
 {
     class Calculation
     {
-        public const int SIZE = 9;
-
-        public int[,] SolveSudoku(int[,] SodukoBoard) // solving the soduko by the backtracing algorithm -> recursively calling itself
+        public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
         {
-            
+            // variables to store the position of the first empty cell
+            int row = 0;
+            int col = 0;
+            bool isEmpty = true;
+
+            // searching for the first empty cell
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (UI.initialSodukoBoard[i, j] == 0) // if found empty cell -> storing it's information
+                    {
+                        row = i;
+                        col = j;
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty)
+                    break;
+            }
+
+            // if no empty cells are found, the puzzle is already solved
+            if (isEmpty)
+                return true;
+
+            // trying to fill the empty cell with a number from 1 to 9
+            for (int num = 1; num <= 9; num++)
+            {
+                if (CanBePlaced(row, col, num))
+                {
+                    UI.initialSodukoBoard[row, col] = num; // placing the correct number in the empty cell
+
+                    if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
+                        return true;
+                    else
+                        UI.initialSodukoBoard[row, col] = 0; // can't position a number in there yet
+                }
+            }
+
+            return false;
         }
 
         // checking if it is safe to place a number in a given cell
-        public bool CanBePlaced(int[,] initialSodukoBoard, int row, int col, int num)
+        public bool CanBePlaced(int row, int col, int num)
         {
-            for (int i = 0; i < SIZE; i++)
+            for (int i = 0; i < UI.SIZE; i++)
             {
-                if (initialSodukoBoard[row, i] == num) // checking num's column for an already exsiting identical
+                if (UI.initialSodukoBoard[row, i] == num) // checking num's column for an already exsiting identical
                     return false;
             }
 
-            for (int i = 0; i < SIZE; i++) // checking num's row for an already exsiting identical
+            for (int i = 0; i < UI.SIZE; i++) // checking num's row for an already exsiting identical
             {
-                if (initialSodukoBoard[i, col] == num)
+                if (UI.initialSodukoBoard[i, col] == num)
                     return false;
             }
 
-            int startRow = row - row % (SIZE / 3);
-            int startCol = col - col % (SIZE / 3);
+            int startRow = row - row % (UI.SIZE / 3);
+            int startCol = col - col % (UI.SIZE / 3);
 
-            for (int i = startRow; i < startRow + (SIZE / 3); i++) // checking num's 3X3 cube for an already exsiting identical
+            for (int i = startRow; i < startRow + (UI.SIZE / 3); i++) // checking num's 3X3 cube for an already exsiting identical
             {
-                for (int j = startCol; j < startCol + (SIZE / 3); j++)
+                for (int j = startCol; j < startCol + (UI.SIZE / 3); j++)
                 {
-                    if (initialSodukoBoard[i, j] == num)
+                    if (UI.initialSodukoBoard[i, j] == num)
                         return false;
                 }
             }
