@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Diagnostics;
 
 namespace SodukoSolver
 {
@@ -10,6 +11,10 @@ namespace SodukoSolver
         {
             Console.WriteLine("\nPlease enter the soduko pazzle that you need solved at a string format and press enter:");
             string input = Console.ReadLine();
+
+            // timing the WHOLE process -> validation, converting to board, solving using backtracing, and printing the asnwer
+            var timer = new Stopwatch();
+            timer.Start();
 
             // if user input is null -> custom exception raised
             if (input == null)
@@ -30,6 +35,10 @@ namespace SodukoSolver
             Console.WriteLine("your input is valid");
 
             ConvertToBoard(input);
+
+            timer.Stop();
+            TimeSpan timeTaken = timer.Elapsed;
+            Console.WriteLine("Time taken for the WHOLE operation: " + timeTaken.ToString(@"m\:ss\.fff"));
         }
 
         public void ConvertToBoard(string validInput) // converting the puzzle string to a 2D array
