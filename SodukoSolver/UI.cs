@@ -17,10 +17,6 @@ namespace SodukoSolver
             var timer = new Stopwatch();
             timer.Start();
 
-            // if user input is null -> custom exception raised
-            if (input == null)
-                throw new NullReferenceException("Null input");
-
             // if user input's length is different than 81 (size of 9X9 cube) -> custom exception raised
             if (input.Length != 81)
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length + " instead of " + SIZE * SIZE);
