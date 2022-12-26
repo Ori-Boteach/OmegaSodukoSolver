@@ -13,10 +13,6 @@ namespace SodukoSolver
             Console.WriteLine("\nPlease enter the soduko pazzle that you need solved at a string format and press enter:");
             string input = Console.ReadLine();
 
-            // timing the WHOLE process -> validation, converting to board, solving using backtracing, and printing the asnwer
-            var timer = new Stopwatch();
-            timer.Start();
-
             // if user input's length is different than 81 (size of 9X9 cube) -> custom exception raised
             if (input.Length != 81)
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length + " instead of " + SIZE * SIZE);
@@ -26,16 +22,18 @@ namespace SodukoSolver
             for (int i = 0; i < inputChars.Length; i++)
             {
                 if (inputChars[i] < '0' || inputChars[i] > '9')
-                    throw new InvalidCastException("Invalid char in index " + i + " of the inputted puzzle");
+                    throw new InvalidInputCharException("Invalid char in index " + i + " of the inputted puzzle");
             }
 
-            Console.WriteLine("***your input is valid!***");
-
+            // timing the solution process
+            var timer = new Stopwatch();
+            timer.Start();
+            
             ConvertToBoard(input);
 
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("\nTime taken for the WHOLE operation: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
+            Console.WriteLine("\nTime taken for the solving operation: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
         }
 
         public void ConvertToBoard(string validInput) // converting the puzzle string to a 2D array
@@ -49,16 +47,31 @@ namespace SodukoSolver
                     index++;
                 }
             }
-
+            
             Calculation calculation = new Calculation();
+            for (int i = 0; i < SIZE; i++) // checking for an INITIALY INVALID soduko board
+            {
+                for (int j = 0; j < SIZE; j++)
+                {
+                    if (initialSodukoBoard[i, j] != 0)
+                    {
+                        // saving the current num, changing to -1 and checking if can be there. if true -> change back to num and continue, if false -> custom exception raised
+                        int temp = initialSodukoBoard[i, j];
+                        initialSodukoBoard[i, j] = -1;
+                        if (!calculation.CanBePlaced(i, j, temp))
+                            throw new InvalidInputPlaceException("Invalid inputted puzzle: can't place " + temp + " in place [" + (i+1) + ", " + (j+1) + "] of the grid");
+                        initialSodukoBoard[i, j] = temp;
+                    }
+                }
+            }
             bool answer = calculation.SolveSudoku();
             SodukoResult(answer);
         }
 
         public void SodukoResult(bool answer)
         {
-            if (!answer) // if the returned value from SolveSudoku is flase -> soduko is unsolvable
-                Console.WriteLine("No solution found!");
+            if (!answer) // if the returned value from SolveSudoku is flase -> soduko is UNSOLVABLE
+                Console.WriteLine("\n***The soduko is unsolvable***");
             else
             {
                 Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");

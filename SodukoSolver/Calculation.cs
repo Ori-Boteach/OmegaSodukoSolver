@@ -10,9 +10,9 @@
             bool isEmpty = true;
 
             // searching for the first empty cell
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < UI.SIZE; i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < UI.SIZE; j++)
                 {
                     if (UI.initialSodukoBoard[i, j] == 0) // if found empty cell -> storing it's information
                     {
@@ -31,7 +31,7 @@
                 return true;
 
             // trying to fill the empty cell with a number from 1 to 9
-            for (int num = 1; num <= 9; num++)
+            for (int num = 1; num <= UI.SIZE; num++)
             {
                 if (CanBePlaced(row, col, num))
                 {
@@ -43,7 +43,6 @@
                         UI.initialSodukoBoard[row, col] = 0; // can't position a number in there yet
                 }
             }
-
             return false;
         }
 
@@ -73,7 +72,6 @@
                         return false;
                 }
             }
-
             return true; // if num passed all tests -> returns TRUE to SolveSudoku
         }
     }
