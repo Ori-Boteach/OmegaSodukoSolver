@@ -14,15 +14,15 @@
                 {
                     ui.StartAndValidation();
                 }
-                catch (NullReferenceException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
                 catch (InvalidInputLengthException e)
                 {
                     Console.WriteLine(e.Message);
                 }
-                catch (InvalidCastException e)
+                catch (InvalidInputCharException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                catch (InvalidInputPlaceException e)
                 {
                     Console.WriteLine(e.Message);
                 }
