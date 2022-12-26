@@ -1,7 +1,7 @@
 ﻿namespace SodukoSolver
 {
     [Serializable]
-    public class InvalidInputLengthException : Exception
+    public class InvalidInputLengthException : Exception // a custom exception for illegal input length
     {
         public InvalidInputLengthException() { }
 
@@ -9,14 +9,15 @@
     }
 
     [Serializable]
-    public class InvalidInputCharException : Exception
+    public class InvalidInputCharException : Exception // a custom exception for illegal input char or chars
     {
         public InvalidInputCharException() { }
 
         public InvalidInputCharException(string message) : base(message) { }
     }
+    
     [Serializable]
-    public class InvalidInputPlaceException : Exception
+    public class InvalidInputPlaceException : Exception // a custom exception for initialy illegal inputted soduko 
     {
         public InvalidInputPlaceException() { }
 

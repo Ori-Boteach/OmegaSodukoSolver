@@ -49,12 +49,13 @@ namespace SodukoSolver
             }
             
             Calculation calculation = new Calculation();
-            for (int i = 0; i < SIZE; i++) // checking for an initially invalid soduko board
+            for (int i = 0; i < SIZE; i++) // checking for an INITIALY INVALID soduko board
             {
                 for (int j = 0; j < SIZE; j++)
                 {
                     if (initialSodukoBoard[i, j] != 0)
                     {
+                        // saving the current num, changing to -1 and checking if can be there. if true -> change back to num and continue, if false -> custom exception raised
                         int temp = initialSodukoBoard[i, j];
                         initialSodukoBoard[i, j] = -1;
                         if (!calculation.CanBePlaced(i, j, temp))
