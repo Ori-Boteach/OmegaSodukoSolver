@@ -5,8 +5,12 @@ namespace SodukoSolver
 {
     public class UI
     {
-        public const int SIZE = 9;
-        public static int[,] initialSodukoBoard = new int[SIZE, SIZE];
+        public static int SIZE;
+        #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
+        #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
+        #pragma warning disable CS8604 // disable -> possible null reference argument
+
+        public static int[,] initialSodukoBoard;
 
         public void getInput() // recieving the input from the user
         {
@@ -17,18 +21,22 @@ namespace SodukoSolver
 
         public void ValidationAndStart(string input) // validating the input and starting the calculation process
         {
-            // if user input's length is different than 81 (size of 9X9 cube) -> custom exception raised
-            if (input.Length != 81)
-                throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length + " instead of " + SIZE * SIZE);
+            List<int> possibleSizes = new List<int> {1, 4, 9, 16, 25}; // a list that holds all possible soduko sizes
+
+            SIZE = (int)Math.Sqrt(input.Length);
+            initialSodukoBoard = new int[SIZE, SIZE];
+
+            if (!possibleSizes.Contains(SIZE)) // if user input's length is invalid -> custom exception raised
+                throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length);
 
             // if char in user input isn't a valid digit -> custom exception raised
             char[] inputChars = input.ToCharArray();
             for (int i = 0; i < inputChars.Length; i++)
             {
-                if (inputChars[i] < '0' || inputChars[i] > '9')
+                if (inputChars[i] < '0' || inputChars[i] > (char)(SIZE + '0'))
                     throw new InvalidInputCharException("Invalid char in index " + i + " of the inputted puzzle");
             }
-
+            
             // timing the solution process
             var timer = new Stopwatch();
             timer.Start();
@@ -116,7 +124,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    solvedSodukoString.Append(initialSodukoBoard[i, j]);
+                    solvedSodukoString.Append((char)(initialSodukoBoard[i, j] + '0')); // converting back the values to their assigned chars
                 }
             }
 

@@ -57,7 +57,7 @@
                     if (UI.initialSodukoBoard[row, col] == 0) // only if doesnt have a value yet
                     {
                         // an array to store all the possible values for this current cell
-                        int[] possibleValues = new int[9];
+                        int[] possibleValues = new int[UI.SIZE];
 
                         // if a value is already in row or coumn -> marking it in the possibleValues array
                         for (int i = 0; i < UI.SIZE; i++)
@@ -70,11 +70,11 @@
                         }
 
                         // if a value is already in cube -> marking it in the possibleValues array
-                        int cubeRow = row - row % (UI.SIZE/3);
-                        int cubeCol = col - col % (UI.SIZE / 3);
-                        for (int i = cubeRow; i < cubeRow + (UI.SIZE / 3); i++)
+                        int cubeRow = row - row % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
+                        int cubeCol = col - col % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
+                        for (int i = cubeRow; i < cubeRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++)
                         {
-                            for (int j = cubeCol; j < cubeCol + (UI.SIZE / 3); j++)
+                            for (int j = cubeCol; j < cubeCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                             {
                                 if (UI.initialSodukoBoard[i, j] > 0)
                                     possibleValues[UI.initialSodukoBoard[i, j] - 1] = 1;
@@ -123,12 +123,12 @@
                     return false;
             }
 
-            int startRow = row - row % (UI.SIZE / 3);
-            int startCol = col - col % (UI.SIZE / 3);
+            int startRow = row - row % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
+            int startCol = col - col % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
 
-            for (int i = startRow; i < startRow + (UI.SIZE / 3); i++) // checking num's 3X3 cube for an already exsiting identical
+            for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++) // checking num's 3X3 cube for an already exsiting identical
             {
-                for (int j = startCol; j < startCol + (UI.SIZE / 3); j++)
+                for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                 {
                     if (UI.initialSodukoBoard[i, j] == num)
                         return false;
