@@ -10,9 +10,30 @@
             UI ui = new UI();
             while (wantsAgain == true)
             {
+                Console.WriteLine("\n\nWould you like to enter the soduko puzzle as a string to the console or as a file?");
+                Console.WriteLine("Enter 1 for console, 2 for file or 'q' to quit");
+                string choise = Console.ReadLine();
                 try
                 {
-                    ui.getInput();
+                    switch (choise)
+                    {
+                        case "1":
+                            ui.getInputAsString();
+                            break;
+                            
+                        case "2":
+                            ui.getInputAsFile();
+                            break;
+                            
+                        case "q":
+                            ui.endMessage();
+                            Environment.Exit(0);
+                            break;
+                            
+                        default:
+                            Console.WriteLine("Invalid choice, please try again.");
+                            continue;
+                    }
                 }
                 catch (InvalidInputLengthException e)
                 {
