@@ -8,11 +8,15 @@ namespace SodukoSolver
         public const int SIZE = 9;
         public static int[,] initialSodukoBoard = new int[SIZE, SIZE];
 
-        public void StartAndValidation() // recieving the input from the user and validating it
+        public void getInput() // recieving the input from the user
         {
             Console.WriteLine("\nPlease enter the soduko pazzle that you need solved at a string format and press enter:");
             string input = Console.ReadLine();
+            ValidationAndStart(input);
+        }
 
+        public void ValidationAndStart(string input) // validating the input and starting the calculation process
+        {
             // if user input's length is different than 81 (size of 9X9 cube) -> custom exception raised
             if (input.Length != 81)
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length + " instead of " + SIZE * SIZE);
@@ -47,7 +51,10 @@ namespace SodukoSolver
                     index++;
                 }
             }
-            
+            CallByOrder();
+        }
+        public void CallByOrder()
+        {
             Calculation calculation = new Calculation();
             for (int i = 0; i < SIZE; i++) // checking for an INITIALY INVALID soduko board
             {
@@ -59,14 +66,12 @@ namespace SodukoSolver
                         int temp = initialSodukoBoard[i, j];
                         initialSodukoBoard[i, j] = -1;
                         if (!calculation.CanBePlaced(i, j, temp))
-                            throw new InvalidInputPlaceException("***Invalid inputted puzzle: can't place " + temp + " in place [" + (i+1) + ", " + (j+1) + "] of the puzzle***");
+                            throw new InvalidInputPlaceException("***Invalid inputted puzzle: can't place " + temp + " in place [" + (i + 1) + ", " + (j + 1) + "] of the puzzle***");
                         initialSodukoBoard[i, j] = temp;
                     }
                 }
             }
 
-            while (calculation.SimpleElimination() == true); // calling SimpleElimination while it stills helps 
-            
             bool answer = calculation.SolveSudoku();
             SodukoResult(answer);
         }

@@ -12,7 +12,7 @@
             {
                 try
                 {
-                    ui.StartAndValidation();
+                    ui.getInput();
                 }
                 catch (InvalidInputLengthException e)
                 {
