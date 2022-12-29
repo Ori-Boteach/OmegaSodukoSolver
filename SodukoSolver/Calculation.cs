@@ -30,7 +30,7 @@
             if (isEmpty)
                 return true;
 
-            // trying to fill the empty cell with a number from 1 to 9
+            // trying to fill the empty cell with a number from 1 to Size
             for (int num = 1; num <= UI.SIZE; num++)
             {
                 if (CanBePlaced(row, col, num))
@@ -126,7 +126,7 @@
             int startRow = row - row % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
             int startCol = col - col % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
 
-            for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++) // checking num's 3X3 cube for an already exsiting identical
+            for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++) // checking num's cube for an already exsiting identical
             {
                 for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                 {

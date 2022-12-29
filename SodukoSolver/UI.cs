@@ -5,14 +5,33 @@ namespace SodukoSolver
 {
     public class UI
     {
-        public static int SIZE;
         #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
         #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
         #pragma warning disable CS8604 // disable -> possible null reference argument
 
+        public static int SIZE;
         public static int[,] initialSodukoBoard;
 
-        public void getInput() // recieving the input from the user
+        public void getInputAsFile() // recieving the input from the user as a string from a file by provided file path
+        {
+            Console.WriteLine("\nEnter the file path:");
+            string filePath = Console.ReadLine();
+            try
+            {
+                string input = System.IO.File.ReadAllText(filePath);
+                Console.WriteLine("\nSOLVING THIS SODUKO:\n"+input);
+                ValidationAndStart(input);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                Console.WriteLine("\nError: File not found -> file path should be like C:\\Users\\user\\Downloads\\sudoku_example.txt");
+            }
+            catch (System.IO.IOException)
+            {
+                Console.WriteLine("\nError reading file");
+            }
+        }
+        public void getInputAsString() // recieving the input from the user as a string from the console
         {
             Console.WriteLine("\nPlease enter the soduko pazzle that you need solved at a string format and press enter:");
             string input = Console.ReadLine();
