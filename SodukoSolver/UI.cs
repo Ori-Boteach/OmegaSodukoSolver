@@ -72,6 +72,19 @@ namespace SodukoSolver
                 }
             }
 
+            int zeroCounter = 0;
+            for (int i = 0; i < SIZE; i++) // counting the number of filled cells
+            {
+                for (int j = 0; j < SIZE; j++)
+                {
+                    if (initialSodukoBoard[i, j] == 0)
+                        zeroCounter++;
+                }
+            }
+
+            if (zeroCounter > (SIZE * SIZE / 2)) // if more than half of the cells are empty -> calling SimpleElimination before backtracking to optimize solving time
+                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+
             bool answer = calculation.SolveSudoku();
             SodukoResult(answer);
         }
