@@ -59,11 +59,14 @@ namespace SodukoSolver
                         int temp = initialSodukoBoard[i, j];
                         initialSodukoBoard[i, j] = -1;
                         if (!calculation.CanBePlaced(i, j, temp))
-                            throw new InvalidInputPlaceException("Invalid inputted puzzle: can't place " + temp + " in place [" + (i+1) + ", " + (j+1) + "] of the grid");
+                            throw new InvalidInputPlaceException("***Invalid inputted puzzle: can't place " + temp + " in place [" + (i+1) + ", " + (j+1) + "] of the puzzle***");
                         initialSodukoBoard[i, j] = temp;
                     }
                 }
             }
+
+            while (calculation.SimpleElimination() == true); // calling SimpleElimination while it stills helps 
+            
             bool answer = calculation.SolveSudoku();
             SodukoResult(answer);
         }
