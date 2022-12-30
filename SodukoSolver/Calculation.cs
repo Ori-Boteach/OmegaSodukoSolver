@@ -4,7 +4,7 @@
     {
         public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
         {
-            // variables to store the position of the first empty cell
+            // initializing variables to store the position of the first empty cell
             int row = 0;
             int col = 0;
             bool isEmpty = true;
@@ -22,30 +22,30 @@
                         break;
                     }
                 }
-                if (!isEmpty)
+                if (!isEmpty) // if found empty cell -> breaking from the loop
                     break;
             }
 
-            // if no empty cells are found, the puzzle is already solved
-            if (isEmpty)
+            if (isEmpty) // if no empty cells are found, the puzzle is already solved
                 return true;
 
-            // trying to fill the empty cell with a number from 1 to Size
+            // trying to fill the empty cell with a number from 1 to soduko's SIZE
             for (int num = 1; num <= UI.SIZE; num++)
             {
-                if (CanBePlaced(row, col, num))
+                if (CanBePlaced(row, col, num)) // checking if the current value can be places if this cell
                 {
                     UI.initialSodukoBoard[row, col] = num; // placing the correct number in the empty cell
 
                     if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
                         return true;
                     else
-                        UI.initialSodukoBoard[row, col] = 0; // can't position a number in there yet
+                        UI.initialSodukoBoard[row, col] = 0; // can't position a number in there yet (0 == empty cell)
                 }
             }
             return false;
         }
-        
+
+        // applying Simple Elimination algorithm -> placing the correct value in cells that have only one value option 
         public bool SimpleElimination()
         {
             bool positionedValue = false; // checking if there was a positioning of a value in the board
@@ -54,7 +54,7 @@
             {
                 for (int col = 0; col < UI.SIZE; col++)
                 {
-                    if (UI.initialSodukoBoard[row, col] == 0) // only if doesnt have a value yet
+                    if (UI.initialSodukoBoard[row, col] == 0) // only if doesn't have a value yet
                     {
                         // an array to store all the possible values for this current cell
                         int[] possibleValues = new int[UI.SIZE];
@@ -108,22 +108,25 @@
         // checking if it is safe to place a number in the given cell
         public bool CanBePlaced(int row, int col, int num)
         {
+            // checking num's column for an already exsiting identical
             for (int i = 0; i < UI.SIZE; i++)
             {
-                if (UI.initialSodukoBoard[row, i] == num) // checking num's column for an already exsiting identical
+                if (UI.initialSodukoBoard[row, i] == num)
                     return false;
             }
 
-            for (int i = 0; i < UI.SIZE; i++) // checking num's row for an already exsiting identical
+            // checking num's row for an already exsiting identical
+            for (int i = 0; i < UI.SIZE; i++)
             {
                 if (UI.initialSodukoBoard[i, col] == num)
                     return false;
             }
 
+            // checking num's cube for an already exsiting identical
             int startRow = row - row % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
             int startCol = col - col % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
 
-            for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++) // checking num's cube for an already exsiting identical
+            for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++)
             {
                 for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                 {
@@ -131,7 +134,7 @@
                         return false;
                 }
             }
-            return true; // if num passed all tests -> returns TRUE to SolveSudoku
+            return true; // if num passed all tests -> returns true to SolveSudoku
         }
     }
 }

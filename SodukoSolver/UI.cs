@@ -16,6 +16,7 @@ namespace SodukoSolver
         {
             Console.WriteLine("\nEnter the file path:");
             string filePath = Console.ReadLine();
+            
             try
             {
                 string input = System.IO.File.ReadAllText(filePath);
@@ -56,7 +57,7 @@ namespace SodukoSolver
                     throw new InvalidInputCharException("Invalid char in index " + i + " of the inputted puzzle");
             }
             
-            // timing the solution process
+            // timing the solution process -> starting stopwatch, solving and printing solution time
             var timer = new Stopwatch();
             timer.Start();
             
@@ -74,12 +75,14 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    initialSodukoBoard[i, j] = validInput[index] - '0';
+                    initialSodukoBoard[i, j] = validInput[index] - '0'; // converting chars from their ascii codes to actual int values
                     index++;
                 }
             }
             CallByOrder();
         }
+
+        // a function that checks for initialy invalid board and calls the calculation process by their order and necessity
         public void CallByOrder()
         {
             Calculation calculation = new Calculation();
@@ -109,13 +112,15 @@ namespace SodukoSolver
                 }
             }
 
-            if (zeroCounter > (SIZE * SIZE / 2)) // if more than half of the cells are empty -> calling SimpleElimination before backtracking to optimize solving time
+            // if more than half of the cells are empty -> calling SimpleElimination before backtracking to optimize solving time
+            if (zeroCounter > (SIZE * SIZE / 2)) 
                 while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
 
             bool answer = calculation.SolveSudoku();
-            SodukoResult(answer);
+            SodukoResult(answer); // calling the function that prints the solved string
         }
 
+        // a function that returns the answer to the user, if solvable ->  prints the solved soduko, if not -> prints a message
         public void SodukoResult(bool answer)
         {
             if (!answer) // if the returned value from SolveSudoku is flase -> soduko is UNSOLVABLE

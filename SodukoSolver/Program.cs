@@ -9,14 +9,16 @@
 
             bool wantsAgain = true;
             UI ui = new UI();
-            while (wantsAgain == true)
+            
+            while (wantsAgain == true) // a loop that allows the user to enter multiple sodukos
             {
                 Console.WriteLine("\n\nWould you like to enter the soduko puzzle as a string to the console or as a file?");
                 Console.WriteLine("Enter 1 for console, 2 for file or 'q' to quit");
                 string choise = Console.ReadLine();
+                
                 try
                 {
-                    switch (choise)
+                    switch (choise) // the different options the user get enter at the menu and their corresponding actions
                     {
                         case "1":
                             ui.getInputAsString();
@@ -52,10 +54,11 @@
                 Console.WriteLine("\nEnter anything to solve another soduko puzzle or 'q' to quit ");
                 ConsoleKeyInfo UserInput = Console.ReadKey();
                 string answer = UserInput.KeyChar.ToString();
+                
                 if (answer == "q")
                     wantsAgain = false;
             }
-            ui.endMessage();
+            ui.endMessage(); // calling the function to print the message at the end of the solver
         }
     }
 }
