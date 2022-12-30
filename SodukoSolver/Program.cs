@@ -2,6 +2,7 @@
 {
     class Program
     {
+        #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
         static void Main(string[] args)
         {
             Console.WriteLine("WELCOME TO YOUR SODUKO PUZZLE SOLVER! made by @Ori_Boteach");

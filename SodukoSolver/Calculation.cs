@@ -83,24 +83,21 @@
 
                         // counting the number of possible values for the current cell
                         int count = 0;
+                        int value = 0;
                         for (int i = 0; i < UI.SIZE; i++)
                         {
                             if (possibleValues[i] == 0) // -> the value i+1 doesn't conflict with the current value
+                            {
+                                value = i + 1;
                                 count++;
+                            }
                         }
 
                         // if there is only one possible value, filling it into the board
                         if (count == 1)
                         {
-                            for (int i = 0; i < UI.SIZE; i++)
-                            {
-                                if (possibleValues[i] == 0)
-                                {
-                                    UI.initialSodukoBoard[row, col] = i + 1;
-                                    positionedValue = true;
-                                    break; // entered the only value, exiting the loop
-                                }
-                            }
+                            UI.initialSodukoBoard[row, col] = value;
+                            positionedValue = true;
                         }
                     }
                 }
