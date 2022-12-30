@@ -39,7 +39,7 @@ namespace SodukoSolver
             ValidationAndStart(input);
         }
 
-        public void ValidationAndStart(string input) // validating the input and starting the calculation process
+        public string ValidationAndStart(string input) // validating the input and starting the calculation process
         {
             List<int> possibleSizes = new List<int> {1, 4, 9, 16, 25}; // a list that holds all possible soduko sizes
 
@@ -61,14 +61,15 @@ namespace SodukoSolver
             var timer = new Stopwatch();
             timer.Start();
             
-            ConvertToBoard(input);
+            string result = ConvertToBoard(input);
 
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
             Console.WriteLine("\nTime taken for the solving operation: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
+            return result;
         }
 
-        public void ConvertToBoard(string validInput) // converting the puzzle string to a 2D array
+        public string ConvertToBoard(string validInput) // converting the puzzle string to a 2D array
         {            
             int index = 0;
             for (int i = 0; i < SIZE; i++)
@@ -79,11 +80,11 @@ namespace SodukoSolver
                     index++;
                 }
             }
-            CallByOrder();
+            return CallByOrder();
         }
 
         // a function that checks for initialy invalid board and calls the calculation process by their order and necessity
-        public void CallByOrder()
+        public string CallByOrder()
         {
             Calculation calculation = new Calculation();
             for (int i = 0; i < SIZE; i++) // checking for an INITIALY INVALID soduko board
@@ -117,26 +118,30 @@ namespace SodukoSolver
                 while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
 
             bool answer = calculation.SolveSudoku();
-            SodukoResult(answer); // calling the function that prints the solved string
+            return SodukoResult(answer); // calling the function that prints the solved string
         }
 
         // a function that returns the answer to the user, if solvable ->  prints the solved soduko, if not -> prints a message
-        public void SodukoResult(bool answer)
+        public string SodukoResult(bool answer)
         {
             if (!answer) // if the returned value from SolveSudoku is flase -> soduko is UNSOLVABLE
+            {
                 Console.WriteLine("\n***The soduko is unsolvable***");
+                return "***The soduko is unsolvable***";
+            }
             else
             {
                 Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
-                PrintBoard();
+                return PrintBoard();
             }
         }
 
         // printing the solution of the given Soduko puzzle at a string format
-        public void PrintBoard()
+        public string PrintBoard()
         {
             string solvedSodukoString = ConvertBackToString();
             Console.WriteLine(solvedSodukoString);
+            return solvedSodukoString;
         }
 
         public string ConvertBackToString() // converting a soduko represented as a 2D array to string representation
