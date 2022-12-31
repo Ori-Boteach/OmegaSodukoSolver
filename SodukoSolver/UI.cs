@@ -23,11 +23,11 @@ namespace SodukoSolver
                 Console.WriteLine("\nSOLVING THIS SODUKO:\n"+input);
                 ValidationAndStart(input);
             }
-            catch (System.IO.FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("\nError: File not found -> file path should be like C:\\Users\\user\\Downloads\\sudoku_example.txt");
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
                 Console.WriteLine("\nError reading file");
             }
