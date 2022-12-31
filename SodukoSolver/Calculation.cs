@@ -1,4 +1,6 @@
-﻿namespace SodukoSolver
+﻿using System;
+
+namespace SodukoSolver
 {
     class Calculation
     {
@@ -45,8 +47,127 @@
             return false;
         }
 
-        // applying Simple Elimination algorithm -> placing the correct value in cells that have only one value option 
+        // applying Simple Elimination algorithm -> placing the correct value in row,col,cube that has only one value option 
         public bool SimpleElimination()
+        {
+            bool positionedValue = false; // checking if there was a positioning of a value in the board
+            
+            for (int row = 0; row < UI.SIZE; row++) // searching every row for only one missing value
+            {
+                int[] alreadySeen = new int[UI.SIZE];
+                int emptyRow = -1, emptyCol = -1;
+                
+                for (int col = 0; col < UI.SIZE; col++)
+                {                    
+                    if (UI.initialSodukoBoard[row, col] == 0)
+                    {
+                        emptyRow = row;
+                        emptyCol = col;
+                    }
+                    else
+                        alreadySeen[UI.initialSodukoBoard[row, col] - 1] = 1;
+                }
+
+                int count = 0;
+                int value = 0;
+                for (int i = 0; i < UI.SIZE; i++)
+                {
+                    if (alreadySeen[i] == 0) // -> the value i+1 doesn't appear in the eow 
+                    {
+                        value = i + 1;
+                        count++;
+                    }
+                }
+
+                // if there is only one missing value, filling it into the board
+                if (count == 1)
+                {
+                    UI.initialSodukoBoard[emptyRow, emptyCol] = value;
+                    positionedValue = true;
+                }
+            }
+            
+            for (int col = 0; col < UI.SIZE; col++) // searching every col for only one missing value
+            {
+                int[] alreadySeen = new int[UI.SIZE];
+                int emptyRow = -1, emptyCol = -1;
+
+                for (int row = 0; row < UI.SIZE; row++)
+                {
+                    if (UI.initialSodukoBoard[row, col] == 0)
+                    {
+                        emptyRow = row;
+                        emptyCol = col;
+                    }
+                    else
+                        alreadySeen[UI.initialSodukoBoard[row, col] - 1] = 1;
+                }
+
+                int count = 0;
+                int value = 0;
+                for (int i = 0; i < UI.SIZE; i++)
+                {
+                    if (alreadySeen[i] == 0) // -> the value i+1 doesn't appear in the eow 
+                    {
+                        value = i + 1;
+                        count++;
+                    }
+                }
+
+                // if there is only one missing value, filling it into the board
+                if (count == 1)
+                {
+                    UI.initialSodukoBoard[emptyRow, emptyCol] = value;
+                    positionedValue = true;
+                }
+            }
+            
+            for (int k=0; k<UI.SIZE; k++) // checking each subgrid cube for only one empty cell
+            {
+                int startCol = (k % (int)Math.Sqrt(UI.SIZE)) * (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
+                int startRow = (k / (int)Math.Sqrt(UI.SIZE)) * (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
+
+                int[] alreadySeen = new int[UI.SIZE];
+                int emptyRow = -1, emptyCol = -1;
+
+                for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++)
+                {
+                    for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
+                    {
+                        if (UI.initialSodukoBoard[i, j] == 0)
+                        {
+                            emptyRow = i;
+                            emptyCol = j;
+                        }
+                        else
+                            alreadySeen[UI.initialSodukoBoard[i, j] - 1] = 1;
+                    }
+                }
+                
+                int count = 0;
+                int value = 0;
+                for (int i = 0; i < UI.SIZE; i++)
+                {
+                    if (alreadySeen[i] == 0) // -> the value i+1 doesn't appear in the eow 
+                    {
+                        value = i + 1;
+                        count++;
+                    }
+                }
+
+                // if there is only one missing value, filling it into the board
+                if (count == 1)
+                {
+                    UI.initialSodukoBoard[emptyRow, emptyCol] = value;
+                    positionedValue = true;
+                }
+            }
+            
+            return positionedValue;
+        }
+
+        // applying Hidden Single algorithm -> placing the correct value in cells that have only one value option 
+        public bool HiddenSingle()
         {
             bool positionedValue = false; // checking if there was a positioning of a value in the board
 

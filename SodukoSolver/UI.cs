@@ -113,9 +113,13 @@ namespace SodukoSolver
                 }
             }
 
-            // if more than half of the cells are empty -> calling SimpleElimination before backtracking to optimize solving time
-            if (zeroCounter > (SIZE * SIZE / 2)) 
+            // if more than half of the cells are empty -> calling SimpleElimination & HiddenSingle before backtracking to optimize solving time
+            if (zeroCounter > (SIZE * SIZE / 2))
+            {
                 while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+                while (calculation.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
+                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+            }
 
             bool answer = calculation.SolveSudoku();
             return SodukoResult(answer); // calling the function that prints the solved string
