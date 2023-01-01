@@ -50,6 +50,10 @@
                 {
                     Console.WriteLine(e.Message);
                 }
+                catch(ArgumentNullException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
 
                 Console.WriteLine("\nEnter anything to solve another soduko puzzle or 'q' to quit ");
                 ConsoleKeyInfo UserInput = Console.ReadKey();

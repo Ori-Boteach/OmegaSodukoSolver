@@ -16,10 +16,19 @@ namespace SodukoSolver
         {
             Console.WriteLine("\nEnter the file path:");
             string filePath = Console.ReadLine();
-            
+
             try
             {
-                string input = System.IO.File.ReadAllText(filePath);
+                string input = "";
+                try // catching an even where the provided file path is null
+                {
+                    input = System.IO.File.ReadAllText(filePath);
+                }
+                catch(ArgumentException)
+                {
+                    throw new ArgumentNullException();
+                }
+                
                 Console.WriteLine("\nSOLVING THIS SODUKO:\n"+input);
                 ValidationAndStart(input);
             }
