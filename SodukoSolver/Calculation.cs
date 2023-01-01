@@ -1,10 +1,11 @@
-﻿using System;
-
-namespace SodukoSolver
+﻿namespace SodukoSolver
 {
     class Calculation
     {
-        public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
+        static Stack<(int, int)> emptyCells = new Stack<(int, int)>();
+
+        // old method
+         public bool SolveSudokuold() // solving the soduko by the backtracing algorithm -> recursively calling itself
         {
             // initializing variables to store the position of the first empty cell
             int row = 0;
@@ -16,7 +17,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < UI.SIZE; j++)
                 {
-                    if (UI.initialSodukoBoard[i, j] == 0) // if found empty cell -> storing it's information
+                    if (UI.initialSodukoBoard[i, j].Value == 0) // if found empty cell -> storing it's information
                     {
                         row = i;
                         col = j;
@@ -36,15 +37,65 @@ namespace SodukoSolver
             {
                 if (CanBePlaced(row, col, num)) // checking if the current value can be places if this cell
                 {
-                    UI.initialSodukoBoard[row, col] = num; // placing the correct number in the empty cell
+                    UI.initialSodukoBoard[row, col].Value = num; // placing the correct number in the empty cell
 
-                    if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
+                    if (SolveSudokuold()) // the function is recursively calling itself now that this position is solved
                         return true;
                     else
-                        UI.initialSodukoBoard[row, col] = 0; // can't position a number in there yet (0 == empty cell)
+                        UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
                 }
             }
             return false;
+        }
+        
+        public bool populate()
+        {
+            // populating the emptyCells stack with the coordinates of the empty cells in the board
+            for (int row = 0; row < UI.SIZE; row++)
+            {
+                for (int col = 0; col < UI.SIZE; col++)
+                {
+                    if (UI.initialSodukoBoard[row, col].Value == 0)
+                    {
+                        emptyCells.Push((row, col));
+                    }
+                }
+            }
+            return SolveSudoku(); // calling SolveSudoku
+        }
+
+        public bool SolveSudoku()
+        {
+            int row, col;
+            (int row, int col) poppedTuple; // create a tuple to store the popped value from the stack
+            
+            if (emptyCells.TryPop(out poppedTuple)) // poping the next empty cell from the stack
+            {
+                row = poppedTuple.Item1;
+                col = poppedTuple.Item2;
+
+                // trying to fill the empty cell with a number from 1 to soduko's SIZE
+                for (int num = 1; num <= UI.SIZE; num++)
+                {
+                    if (CanBePlaced(row, col, num))
+                    {
+                        UI.initialSodukoBoard[row, col].Value = num;
+
+                        // the function is recursively calling itself now that this position is solved
+                        if (SolveSudoku())
+                            return true;
+                        else
+                            UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
+                    }
+                }
+
+                // pushing the cell back onto the stack so it can be tried again later
+                emptyCells.Push((row, col));
+                return false;
+            }
+
+            // if the stack is empty, all empty cells have been filled and the puzzle is solved
+            return true;
         }
 
         // applying Simple Elimination algorithm -> placing the correct value in row,col,cube that has only one value option 
@@ -59,13 +110,13 @@ namespace SodukoSolver
                 
                 for (int col = 0; col < UI.SIZE; col++)
                 {                    
-                    if (UI.initialSodukoBoard[row, col] == 0)
+                    if (UI.initialSodukoBoard[row, col].Value == 0)
                     {
                         emptyRow = row;
                         emptyCol = col;
                     }
                     else
-                        alreadySeen[UI.initialSodukoBoard[row, col] - 1] = 1;
+                        alreadySeen[UI.initialSodukoBoard[row, col].Value - 1] = 1;
                 }
 
                 int count = 0;
@@ -82,7 +133,7 @@ namespace SodukoSolver
                 // if there is only one missing value, filling it into the board
                 if (count == 1)
                 {
-                    UI.initialSodukoBoard[emptyRow, emptyCol] = value;
+                    UI.initialSodukoBoard[emptyRow, emptyCol].Value = value;
                     positionedValue = true;
                 }
             }
@@ -94,13 +145,13 @@ namespace SodukoSolver
 
                 for (int row = 0; row < UI.SIZE; row++)
                 {
-                    if (UI.initialSodukoBoard[row, col] == 0)
+                    if (UI.initialSodukoBoard[row, col].Value == 0)
                     {
                         emptyRow = row;
                         emptyCol = col;
                     }
                     else
-                        alreadySeen[UI.initialSodukoBoard[row, col] - 1] = 1;
+                        alreadySeen[UI.initialSodukoBoard[row, col].Value - 1] = 1;
                 }
 
                 int count = 0;
@@ -117,7 +168,7 @@ namespace SodukoSolver
                 // if there is only one missing value, filling it into the board
                 if (count == 1)
                 {
-                    UI.initialSodukoBoard[emptyRow, emptyCol] = value;
+                    UI.initialSodukoBoard[emptyRow, emptyCol].Value = value;
                     positionedValue = true;
                 }
             }
@@ -134,13 +185,13 @@ namespace SodukoSolver
                 {
                     for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                     {
-                        if (UI.initialSodukoBoard[i, j] == 0)
+                        if (UI.initialSodukoBoard[i, j].Value == 0)
                         {
                             emptyRow = i;
                             emptyCol = j;
                         }
                         else
-                            alreadySeen[UI.initialSodukoBoard[i, j] - 1] = 1;
+                            alreadySeen[UI.initialSodukoBoard[i, j].Value - 1] = 1;
                     }
                 }
                 
@@ -158,7 +209,7 @@ namespace SodukoSolver
                 // if there is only one missing value, filling it into the board
                 if (count == 1)
                 {
-                    UI.initialSodukoBoard[emptyRow, emptyCol] = value;
+                    UI.initialSodukoBoard[emptyRow, emptyCol].Value = value;
                     positionedValue = true;
                 }
             }
@@ -175,7 +226,7 @@ namespace SodukoSolver
             {
                 for (int col = 0; col < UI.SIZE; col++)
                 {
-                    if (UI.initialSodukoBoard[row, col] == 0) // only if doesn't have a value yet
+                    if (UI.initialSodukoBoard[row, col].Value == 0) // only if doesn't have a value yet
                     {
                         // an array to store all the possible values for this current cell
                         int[] possibleValues = new int[UI.SIZE];
@@ -183,11 +234,11 @@ namespace SodukoSolver
                         // if a value is already in row or coumn -> marking it in the possibleValues array
                         for (int i = 0; i < UI.SIZE; i++)
                         {
-                            if (UI.initialSodukoBoard[row, i] > 0)
-                                possibleValues[UI.initialSodukoBoard[row, i] - 1] = 1;
+                            if (UI.initialSodukoBoard[row, i].Value > 0)
+                                possibleValues[UI.initialSodukoBoard[row, i].Value - 1] = 1;
                             
-                            if (UI.initialSodukoBoard[i, col] > 0)
-                                possibleValues[UI.initialSodukoBoard[i, col] - 1] = 1;
+                            if (UI.initialSodukoBoard[i, col].Value > 0)
+                                possibleValues[UI.initialSodukoBoard[i, col].Value - 1] = 1;
                         }
 
                         // if a value is already in cube -> marking it in the possibleValues array
@@ -197,8 +248,8 @@ namespace SodukoSolver
                         {
                             for (int j = cubeCol; j < cubeCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                             {
-                                if (UI.initialSodukoBoard[i, j] > 0)
-                                    possibleValues[UI.initialSodukoBoard[i, j] - 1] = 1;
+                                if (UI.initialSodukoBoard[i, j].Value > 0)
+                                    possibleValues[UI.initialSodukoBoard[i, j].Value - 1] = 1;
                             }
                         }
 
@@ -217,7 +268,7 @@ namespace SodukoSolver
                         // if there is only one possible value, filling it into the board
                         if (count == 1)
                         {
-                            UI.initialSodukoBoard[row, col] = value;
+                            UI.initialSodukoBoard[row, col].Value = value;
                             positionedValue = true;
                         }
                     }
@@ -227,19 +278,19 @@ namespace SodukoSolver
         }
 
         // checking if it is safe to place a number in the given cell
-        public bool CanBePlaced(int row, int col, int num)
+        public static bool CanBePlaced(int row, int col, int num)
         {
             // checking num's column for an already exsiting identical
             for (int i = 0; i < UI.SIZE; i++)
             {
-                if (UI.initialSodukoBoard[row, i] == num)
+                if (UI.initialSodukoBoard[row, i].Value == num)
                     return false;
             }
 
             // checking num's row for an already exsiting identical
             for (int i = 0; i < UI.SIZE; i++)
             {
-                if (UI.initialSodukoBoard[i, col] == num)
+                if (UI.initialSodukoBoard[i, col].Value == num)
                     return false;
             }
 
@@ -251,7 +302,7 @@ namespace SodukoSolver
             {
                 for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
                 {
-                    if (UI.initialSodukoBoard[i, j] == num)
+                    if (UI.initialSodukoBoard[i, j].Value == num)
                         return false;
                 }
             }

@@ -10,7 +10,7 @@ namespace SodukoSolver
         #pragma warning disable CS8604 // disable -> possible null reference argument
 
         public static int SIZE;
-        public static int[,] initialSodukoBoard;
+        public static Cell[,] initialSodukoBoard;
 
         public void getInputAsFile() // recieving the input from the user as a string from a file by provided file path
         {
@@ -53,7 +53,7 @@ namespace SodukoSolver
             List<int> possibleSizes = new List<int> {1, 4, 9, 16, 25}; // a list that holds all possible soduko sizes
 
             SIZE = (int)Math.Sqrt(input.Length);
-            initialSodukoBoard = new int[SIZE, SIZE];
+            initialSodukoBoard = new Cell[SIZE, SIZE];
 
             if (!possibleSizes.Contains(SIZE)) // if user input's length is invalid -> custom exception raised
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length);
@@ -85,7 +85,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    initialSodukoBoard[i, j] = validInput[index] - '0'; // converting chars from their ascii codes to actual int values
+                    initialSodukoBoard[i, j] = new Cell(validInput[index] - '0'); // creating cells and converting chars from their ascii codes to actual int values
                     index++;
                 }
             }
@@ -100,14 +100,14 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    if (initialSodukoBoard[i, j] != 0)
+                    if (initialSodukoBoard[i, j].Value != 0)
                     {
                         // saving the current num, changing to -1 and checking if can be there. if true -> change back to num and continue, if false -> custom exception raised
-                        int temp = initialSodukoBoard[i, j];
-                        initialSodukoBoard[i, j] = -1;
-                        if (!calculation.CanBePlaced(i, j, temp))
+                        int temp = initialSodukoBoard[i, j].Value;
+                        initialSodukoBoard[i, j].Value = -1;
+                        if (!Calculation.CanBePlaced(i, j, temp))
                             throw new InvalidInputPlaceException("***Invalid inputted puzzle: can't place " + temp + " in place [" + (i + 1) + ", " + (j + 1) + "] of the puzzle***");
-                        initialSodukoBoard[i, j] = temp;
+                        initialSodukoBoard[i, j].Value = temp;
                     }
                 }
             }
@@ -117,7 +117,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    if (initialSodukoBoard[i, j] == 0)
+                    if (initialSodukoBoard[i, j].Value == 0)
                         zeroCounter++;
                 }
             }
@@ -129,9 +129,16 @@ namespace SodukoSolver
                 while (calculation.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
                 while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
             }
-
-            bool answer = calculation.SolveSudoku();
-            return SodukoResult(answer); // calling the function that prints the solved string
+            if (SIZE==9)
+            {
+                bool answer = calculation.populate();
+                return SodukoResult(answer); // calling the function that prints the solved string
+            }
+            else
+            {
+                bool answer = calculation.SolveSudokuold();
+                return SodukoResult(answer); // calling the function that prints the solved string
+            }
         }
 
         // a function that returns the answer to the user, if solvable ->  prints the solved soduko, if not -> prints a message
@@ -166,7 +173,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    solvedSodukoString.Append((char)(initialSodukoBoard[i, j] + '0')); // converting back the values to their assigned chars
+                    solvedSodukoString.Append((char)(initialSodukoBoard[i, j].Value + '0')); // converting back the values to their assigned chars
                 }
             }
 
