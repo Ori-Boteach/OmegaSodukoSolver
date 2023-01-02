@@ -5,8 +5,8 @@
         static Stack<(int, int)> emptyCells = new Stack<(int, int)>();
 
         // old method
-         public bool SolveSudokuold() // solving the soduko by the backtracing algorithm -> recursively calling itself
-        {
+         public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
+         {
             // initializing variables to store the position of the first empty cell
             int row = 0;
             int col = 0;
@@ -33,13 +33,13 @@
                 return true;
 
             // trying to fill the empty cell with a number from 1 to soduko's SIZE
-            for (int num = 1; num <= UI.SIZE; num++)
+            foreach (int num in UI.initialSodukoBoard[row, col].PossibleValues)
             {
                 if (CanBePlaced(row, col, num)) // checking if the current value can be places if this cell
                 {
                     UI.initialSodukoBoard[row, col].Value = num; // placing the correct number in the empty cell
 
-                    if (SolveSudokuold()) // the function is recursively calling itself now that this position is solved
+                    if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
                         return true;
                     else
                         UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
@@ -47,178 +47,59 @@
             }
             return false;
         }
-        
-        public bool populate()
-        {
-            // populating the emptyCells stack with the coordinates of the empty cells in the board
-            for (int row = 0; row < UI.SIZE; row++)
-            {
-                for (int col = 0; col < UI.SIZE; col++)
-                {
-                    if (UI.initialSodukoBoard[row, col].Value == 0)
-                    {
-                        emptyCells.Push((row, col));
-                    }
-                }
-            }
-            return SolveSudoku(); // calling SolveSudoku
-        }
 
-        public bool SolveSudoku()
-        {
-            int row, col;
-            (int row, int col) poppedTuple; // create a tuple to store the popped value from the stack
-            
-            if (emptyCells.TryPop(out poppedTuple)) // poping the next empty cell from the stack
-            {
-                row = poppedTuple.Item1;
-                col = poppedTuple.Item2;
+        //public bool populate()
+        //{
+        //    // populating the emptyCells stack with the coordinates of the empty cells in the board
+        //    for (int row = 0; row < UI.SIZE; row++)
+        //    {
+        //        for (int col = 0; col < UI.SIZE; col++)
+        //        {
+        //            if (UI.initialSodukoBoard[row, col].Value == 0)
+        //            {
+        //                emptyCells.Push((row, col));
+        //            }
+        //        }
+        //    }
+        //    return SolveSudoku(); // calling SolveSudoku
+        //}
 
-                // trying to fill the empty cell with a number from 1 to soduko's SIZE
-                for (int num = 1; num <= UI.SIZE; num++)
-                {
-                    if (CanBePlaced(row, col, num))
-                    {
-                        UI.initialSodukoBoard[row, col].Value = num;
+        //public bool SolveSudoku()
+        //{
+        //    int row, col;
+        //    (int row, int col) poppedTuple; // create a tuple to store the popped value from the stack
 
-                        // the function is recursively calling itself now that this position is solved
-                        if (SolveSudoku())
-                            return true;
-                        else
-                            UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
-                    }
-                }
+        //    if (emptyCells.TryPop(out poppedTuple)) // poping the next empty cell from the stack
+        //    {
+        //        row = poppedTuple.Item1;
+        //        col = poppedTuple.Item2;
 
-                // pushing the cell back onto the stack so it can be tried again later
-                emptyCells.Push((row, col));
-                return false;
-            }
+        //        // trying to fill the empty cell with a number from 1 to soduko's SIZE
+        //        foreach (int num in UI.initialSodukoBoard[row, col].PossibleValues)
+        //        {
+        //            if (CanBePlaced(row, col, num))
+        //            {
+        //                UI.initialSodukoBoard[row, col].Value = num;
 
-            // if the stack is empty, all empty cells have been filled and the puzzle is solved
-            return true;
-        }
+        //                // the function is recursively calling itself now that this position is solved
+        //                if (SolveSudoku())
+        //                    return true;
+        //                else
+        //                    UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
+        //            }
+        //        }
 
-        // applying Simple Elimination algorithm -> placing the correct value in row,col,cube that has only one value option 
+        //        // pushing the cell back onto the stack so it can be tried again later
+        //        emptyCells.Push((row, col));
+        //        return false;
+        //    }
+
+        //    // if the stack is empty, all empty cells have been filled and the puzzle is solved
+        //    return true;
+        //}
+
+        //applying Simple Elimination algorithm -> placing the correct value in cells that have only one value option
         public bool SimpleElimination()
-        {
-            bool positionedValue = false; // checking if there was a positioning of a value in the board
-            
-            for (int row = 0; row < UI.SIZE; row++) // searching every row for only one missing value
-            {
-                int[] alreadySeen = new int[UI.SIZE];
-                int emptyRow = -1, emptyCol = -1;
-                
-                for (int col = 0; col < UI.SIZE; col++)
-                {                    
-                    if (UI.initialSodukoBoard[row, col].Value == 0)
-                    {
-                        emptyRow = row;
-                        emptyCol = col;
-                    }
-                    else
-                        alreadySeen[UI.initialSodukoBoard[row, col].Value - 1] = 1;
-                }
-
-                int count = 0;
-                int value = 0;
-                for (int i = 0; i < UI.SIZE; i++)
-                {
-                    if (alreadySeen[i] == 0) // -> the value i+1 doesn't appear in the eow 
-                    {
-                        value = i + 1;
-                        count++;
-                    }
-                }
-
-                // if there is only one missing value, filling it into the board
-                if (count == 1)
-                {
-                    UI.initialSodukoBoard[emptyRow, emptyCol].Value = value;
-                    positionedValue = true;
-                }
-            }
-            
-            for (int col = 0; col < UI.SIZE; col++) // searching every col for only one missing value
-            {
-                int[] alreadySeen = new int[UI.SIZE];
-                int emptyRow = -1, emptyCol = -1;
-
-                for (int row = 0; row < UI.SIZE; row++)
-                {
-                    if (UI.initialSodukoBoard[row, col].Value == 0)
-                    {
-                        emptyRow = row;
-                        emptyCol = col;
-                    }
-                    else
-                        alreadySeen[UI.initialSodukoBoard[row, col].Value - 1] = 1;
-                }
-
-                int count = 0;
-                int value = 0;
-                for (int i = 0; i < UI.SIZE; i++)
-                {
-                    if (alreadySeen[i] == 0) // -> the value i+1 doesn't appear in the eow 
-                    {
-                        value = i + 1;
-                        count++;
-                    }
-                }
-
-                // if there is only one missing value, filling it into the board
-                if (count == 1)
-                {
-                    UI.initialSodukoBoard[emptyRow, emptyCol].Value = value;
-                    positionedValue = true;
-                }
-            }
-            
-            for (int k=0; k<UI.SIZE; k++) // checking each subgrid cube for only one empty cell
-            {
-                int startCol = (k % (int)Math.Sqrt(UI.SIZE)) * (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
-                int startRow = (k / (int)Math.Sqrt(UI.SIZE)) * (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
-
-                int[] alreadySeen = new int[UI.SIZE];
-                int emptyRow = -1, emptyCol = -1;
-
-                for (int i = startRow; i < startRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++)
-                {
-                    for (int j = startCol; j < startCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
-                    {
-                        if (UI.initialSodukoBoard[i, j].Value == 0)
-                        {
-                            emptyRow = i;
-                            emptyCol = j;
-                        }
-                        else
-                            alreadySeen[UI.initialSodukoBoard[i, j].Value - 1] = 1;
-                    }
-                }
-                
-                int count = 0;
-                int value = 0;
-                for (int i = 0; i < UI.SIZE; i++)
-                {
-                    if (alreadySeen[i] == 0) // -> the value i+1 doesn't appear in the eow 
-                    {
-                        value = i + 1;
-                        count++;
-                    }
-                }
-
-                // if there is only one missing value, filling it into the board
-                if (count == 1)
-                {
-                    UI.initialSodukoBoard[emptyRow, emptyCol].Value = value;
-                    positionedValue = true;
-                }
-            }
-            
-            return positionedValue;
-        }
-
-        // applying Hidden Single algorithm -> placing the correct value in cells that have only one value option 
-        public bool HiddenSingle()
         {
             bool positionedValue = false; // checking if there was a positioning of a value in the board
 
@@ -236,7 +117,7 @@
                         {
                             if (UI.initialSodukoBoard[row, i].Value > 0)
                                 possibleValues[UI.initialSodukoBoard[row, i].Value - 1] = 1;
-                            
+
                             if (UI.initialSodukoBoard[i, col].Value > 0)
                                 possibleValues[UI.initialSodukoBoard[i, col].Value - 1] = 1;
                         }
@@ -273,7 +154,139 @@
                         }
                     }
                 }
-            }            
+            }
+            return positionedValue;
+        }
+
+        private void UpdatePossiblesForCells(int row, int col)
+        {
+            int value = UI.initialSodukoBoard[row, col].Value;
+
+            // update the candidates of the cells in the same row
+            for (int i = 0; i < UI.SIZE; i++)
+            {
+                if (i != col)
+                {
+                    UI.initialSodukoBoard[row, i].PossibleValues.Remove(value);
+                }
+            }
+
+            // update the candidates of the cells in the same column
+            for (int i = 0; i < UI.SIZE; i++)
+            {
+                if (i != row)
+                {
+                    UI.initialSodukoBoard[i, col].PossibleValues.Remove(value);
+                }
+            }
+
+            // update the candidates of the cells in the same block
+            int blockRowStart = row - row % (int)Math.Sqrt(UI.SIZE);
+            int blockColStart = col - col % (int)Math.Sqrt(UI.SIZE);
+            
+            for (int i = blockRowStart; i < blockRowStart + (int)Math.Sqrt(UI.SIZE); i++)
+            {
+                for (int j = blockColStart; j < blockColStart + (int)Math.Sqrt(UI.SIZE); j++)
+                {
+                    if (i != row && j != col)
+                    {
+                        UI.initialSodukoBoard[i, j].PossibleValues.Remove(value);
+                    }
+                }
+            }
+        }
+
+        public bool HiddenSingle()
+        {
+            bool positionedValue = false; // checking if there was a positioning of a value in the board
+
+            for (int row = 0; row < UI.SIZE; row++) // go over each row
+            {
+                for (int value = 1; value <= UI.SIZE; value++) // check for each value
+                {
+                    // count the number of cells in the row that have the value as a candidate
+                    int count = 0;
+                    int col = 0;
+                    for (int i = 0; i < UI.SIZE; i++)
+                    {
+                        if (UI.initialSodukoBoard[row, i].PossibleValues.Contains(value))
+                        {
+                            count++;
+                            col = i;
+                        }
+                    }
+
+                    // if there is only one cell that has current value as possible, set it
+                    if (count == 1)
+                    {
+                        UI.initialSodukoBoard[row, col].Value = value;
+                        UI.initialSodukoBoard[row, col].PossibleValues.Clear();
+                        UpdatePossiblesForCells(row, col);
+                        positionedValue = true;
+                    }
+                }
+            }
+
+            for (int col = 0; col < UI.SIZE; col++) // go over each col
+            {
+                for (int value = 1; value <= UI.SIZE; value++) // check for each value
+                {
+                    // count the number of cells in the column that have the value as a candidate
+                    int count = 0;
+                    int row = 0;
+                    for (int i = 0; i < UI.SIZE; i++)
+                    {
+                        if (UI.initialSodukoBoard[i, col].PossibleValues.Contains(value))
+                        {
+                            count++;
+                            row = i;
+                        }
+                    }
+
+                    // if there is only one cell that has current value as possible, set it
+                    if (count == 1)
+                    {
+                        UI.initialSodukoBoard[row, col].Value = value;
+                        UpdatePossiblesForCells(row, col);
+                        positionedValue = true;
+                    }
+                }
+            }
+
+            for (int blockRow = 0; blockRow < (int)Math.Sqrt(UI.SIZE); blockRow++) // go over each subgrid
+            {
+                for (int blockCol = 0; blockCol < (int)Math.Sqrt(UI.SIZE); blockCol++)
+                {
+                    for (int value = 1; value <= UI.SIZE; value++) // check for each value
+                    {
+                        // count the number of cells in the block that have the value as a possibility
+                        int count = 0;
+                        int row = 0;
+                        int col = 0;
+                        for (int i = blockRow * (int)Math.Sqrt(UI.SIZE); i < blockRow * (int)Math.Sqrt(UI.SIZE) + (int)Math.Sqrt(UI.SIZE); i++)
+                        {
+                            for (int j = blockCol * (int)Math.Sqrt(UI.SIZE); j < blockCol * (int)Math.Sqrt(UI.SIZE) + (int)Math.Sqrt(UI.SIZE); j++)
+                            {
+                                if (UI.initialSodukoBoard[i, j].PossibleValues.Contains(value))
+                                {
+                                    count++;
+                                    row = i;
+                                    col = j;
+                                }
+                            }
+                        }
+
+                        // if there is only one cell that has current value as possible, set it
+                        if (count == 1)
+                        {
+                            UI.initialSodukoBoard[row, col].Value = value;
+                            UpdatePossiblesForCells(row, col);
+                            positionedValue = true;
+                        }
+                    }
+                }
+            }
+            // return true if any changes were made, false otherwise
             return positionedValue;
         }
 

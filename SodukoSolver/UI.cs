@@ -89,6 +89,7 @@ namespace SodukoSolver
                     index++;
                 }
             }
+            UpdatePossibleValuesForEmpty();
             return CallByOrder();
         }
 
@@ -127,18 +128,12 @@ namespace SodukoSolver
             {
                 while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
                 while (calculation.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
-                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
+                Optimize optimize = new Optimize();
+                optimize.HiddenDoubles();
             }
-            if (SIZE==9)
-            {
-                bool answer = calculation.populate();
-                return SodukoResult(answer); // calling the function that prints the solved string
-            }
-            else
-            {
-                bool answer = calculation.SolveSudokuold();
-                return SodukoResult(answer); // calling the function that prints the solved string
-            }
+            bool answer = calculation.SolveSudoku();
+            return SodukoResult(answer); // calling the function that prints the solved string
         }
 
         // a function that returns the answer to the user, if solvable ->  prints the solved soduko, if not -> prints a message
@@ -188,6 +183,24 @@ namespace SodukoSolver
             Console.WriteLine("Made by @Ori_Boteach");
             Console.WriteLine("Press any key to exit your solver");
             Console.ReadKey();
+        }
+
+        public void UpdatePossibleValuesForEmpty()
+        {
+            for(int i=0; i < SIZE; i++)
+            {
+                for (int j = 0; j < SIZE; j++)
+                {
+                    if (initialSodukoBoard[i, j].Value == 0)
+                    {
+                        for (int k = 1; k <= SIZE; k++)
+                        {
+                            if (Calculation.CanBePlaced(i, j, k)==false)
+                                initialSodukoBoard[i, j].PossibleValues.Remove(k);
+                        }
+                    }
+                }
+            }
         }
     }
 }

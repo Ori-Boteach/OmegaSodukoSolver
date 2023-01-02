@@ -10,9 +10,9 @@ public class Cell
         Value = value;
         PossibleValues = new HashSet<int>();
 
-        if (value == 0) // If the cell is empty
-        {
-            // Add all possible values to the HashSet
+        if (value == 0) // only if the cell is empty
+        {   
+            // add all possible values to the HashSet -> 1 to SIZE
             for (int i = 1; i <= UI.SIZE; i++)
             {
                 PossibleValues.Add(i);
