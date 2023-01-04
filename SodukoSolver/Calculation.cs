@@ -1,12 +1,11 @@
-﻿namespace SodukoSolver
+﻿using System.Drawing;
+
+namespace SodukoSolver
 {
     class Calculation
     {
-        static Stack<(int, int)> emptyCells = new Stack<(int, int)>();
-
-        // old method
         public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
-         {
+        {
             // initializing variables to store the position of the first empty cell
             int row = 0;
             int col = 0;
@@ -47,59 +46,6 @@
             }
             return false;
         }
-
-        //public bool populate()
-        //{
-        //    // populating the emptyCells stack with the coordinates of the empty cells in the board
-        //    for (int row = 0; row < UI.SIZE; row++)
-        //    {
-        //        for (int col = 0; col < UI.SIZE; col++)
-        //        {
-        //            if (UI.initialSodukoBoard[row, col].Value == 0)
-        //            {
-        //                emptyCells.Push((row, col));
-        //            }
-        //        }
-        //    }
-        //    return SolveSudoku(); // calling SolveSudoku
-        //}
-
-        //public bool SolveSudoku()
-        //{
-        //    int row, col;
-        //    (int row, int col) poppedTuple; // create a tuple to store the popped value from the stack
-
-        //    if (emptyCells.TryPop(out poppedTuple)) // poping the next empty cell from the stack
-        //    {
-        //        row = poppedTuple.Item1;
-        //        col = poppedTuple.Item2;
-
-        //        // trying to fill the empty cell with a number from 1 to soduko's SIZE
-        //        foreach (int num in UI.initialSodukoBoard[row, col].PossibleValues)
-        //        {
-        //            if (CanBePlaced(row, col, num))
-        //            {
-        //                UI.initialSodukoBoard[row, col].Value = num;
-
-        //                // the function is recursively calling itself now that this position is solved
-        //                if (SolveSudoku())
-        //                    return true;
-        //                else
-        //                    UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
-        //            }
-        //        }
-
-        //        // pushing the cell back onto the stack so it can be tried again later
-        //        emptyCells.Push((row, col));
-        //        return false;
-        //    }
-
-        //    // if the stack is empty, all empty cells have been filled and the puzzle is solved
-        //    return true;
-        //}
-
-        //applying Simple Elimination algorithm -> placing the correct value in cells that have only one value option
-        
 
         // checking if it is safe to place a number in the given cell
         public static bool CanBePlaced(int row, int col, int num)

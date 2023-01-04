@@ -1,16 +1,18 @@
 ﻿using System.Text;
 using System.Diagnostics;
+#pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
+#pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
+#pragma warning disable CS8604 // disable -> possible null reference argument
 
 namespace SodukoSolver
 {
     public class UI
     {
-        #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
-        #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
-        #pragma warning disable CS8604 // disable -> possible null reference argument
-
         public static int SIZE;
         public static Cell[,] initialSodukoBoard;
+        public static HashSet<int>[] rowValues = new HashSet<int>[SIZE];
+        public static HashSet<int>[] colValues = new HashSet<int>[SIZE];
+        public static HashSet<int>[] cubeValues = new HashSet<int>[SIZE];
 
         public void getInputAsFile() // recieving the input from the user as a string from a file by provided file path
         {
@@ -133,6 +135,7 @@ namespace SodukoSolver
                 while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
                 optimize.HiddenDoubles();
             }
+
             bool answer = calculation.SolveSudoku();
             return SodukoResult(answer); // calling the function that prints the solved string
         }

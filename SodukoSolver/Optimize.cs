@@ -2,6 +2,7 @@
 {
     class Optimize
     {
+        //applying Simple Elimination algorithm -> placing the correct value in cells that have only one value option
         public bool SimpleElimination()
         {
             bool positionedValue = false; // checking if there was a positioning of a value in the board
