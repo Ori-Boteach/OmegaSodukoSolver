@@ -8,7 +8,7 @@
             Console.WriteLine("WELCOME TO YOUR SODUKO PUZZLE SOLVER! made by @Ori_Boteach");
 
             bool wantsAgain = true;
-            UI ui = new UI();
+            UI ui = new();
             
             while (wantsAgain == true) // a loop that allows the user to enter multiple sodukos
             {

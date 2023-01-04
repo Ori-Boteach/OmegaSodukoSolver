@@ -65,8 +65,9 @@ namespace SodukoSolver
                 if (inputChars[i] < '0' || inputChars[i] > (char)(SIZE + '0'))
                     throw new InvalidInputCharException("Invalid char in index " + i + " of the inputted puzzle");
             }
-            
+
             // timing the solution process -> starting stopwatch, solving and printing solution time
+            Console.WriteLine("\nGOT IT! processing...");
             var timer = new Stopwatch();
             timer.Start();
             
@@ -126,10 +127,10 @@ namespace SodukoSolver
             // if more than half of the cells are empty -> calling SimpleElimination & HiddenSingle before backtracking to optimize solving time
             if (zeroCounter > (SIZE * SIZE / 2))
             {
-                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
-                while (calculation.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
-                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
                 Optimize optimize = new Optimize();
+                while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+                while (optimize.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
+                while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
                 optimize.HiddenDoubles();
             }
             bool answer = calculation.SolveSudoku();

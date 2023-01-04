@@ -1,5 +1,6 @@
 using SodukoSolver;
 using NUnit.Framework;
+using SodukoSolver.Exceptions;
 
 namespace SodukoSolverTests
 {
