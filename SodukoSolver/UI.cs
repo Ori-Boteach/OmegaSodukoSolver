@@ -1,25 +1,50 @@
 ﻿using System.Text;
 using System.Diagnostics;
+#pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
+#pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
+#pragma warning disable CS8622 // disable -> Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 
 namespace SodukoSolver
 {
     public class UI
     {
-        #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
-        #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
-        #pragma warning disable CS8604 // disable -> possible null reference argument
-
         public static int SIZE;
-        public static int[,] initialSodukoBoard;
+        public static int CUBE_SIZE;
+        public static Cell[,] initialSodukoBoard;
+
+        // when the user enters a keyboard interrupt (Ctrl+C) this event will be called to display end message and end the program
+        public void OnKeyboardInterruptEvent(object sender, ConsoleCancelEventArgs e)
+        {
+            Console.WriteLine("\nKeyboard interrupt detected... Teminating, start over");
+            e.Cancel = true; // Set the Cancel property to true to prevent the process from being terminated
+            Environment.Exit(0); // Terminate the program
+        }
 
         public void getInputAsFile() // recieving the input from the user as a string from a file by provided file path
         {
+            // displaying a message to the user (via an event) when a keyboard interrupt is detected
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(OnKeyboardInterruptEvent);
+
             Console.WriteLine("\nEnter the file path:");
             string filePath = Console.ReadLine();
             
+            if (filePath == null) // Check if the input string is null
+            {
+                throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
+            }
+
             try
             {
-                string input = System.IO.File.ReadAllText(filePath);
+                string input = "";
+                try // catching an even where the provided file path is null
+                {
+                    input = System.IO.File.ReadAllText(filePath);
+                }
+                catch(ArgumentException)
+                {
+                    throw new ArgumentNullException();
+                }
+                
                 Console.WriteLine("\nSOLVING THIS SODUKO:\n"+input);
                 ValidationAndStart(input);
             }
@@ -32,19 +57,29 @@ namespace SodukoSolver
                 Console.WriteLine("\nError reading file");
             }
         }
-        public void getInputAsString() // recieving the input from the user as a string from the console
+        public void getInputAsString()
         {
+            // displaying a message to the user (via an event) when a keyboard interrupt is detected
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(OnKeyboardInterruptEvent);
+
             Console.WriteLine("\nPlease enter the soduko pazzle that you need solved at a string format and press enter:");
             string input = Console.ReadLine();
+            
+            if (input == null) // checking if the input string is null
+            {
+                throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
+            }
             ValidationAndStart(input);
         }
+
 
         public string ValidationAndStart(string input) // validating the input and starting the calculation process
         {
             List<int> possibleSizes = new List<int> {1, 4, 9, 16, 25}; // a list that holds all possible soduko sizes
 
             SIZE = (int)Math.Sqrt(input.Length);
-            initialSodukoBoard = new int[SIZE, SIZE];
+            CUBE_SIZE = (int)Math.Sqrt(UI.SIZE);
+            initialSodukoBoard = new Cell[SIZE, SIZE];
 
             if (!possibleSizes.Contains(SIZE)) // if user input's length is invalid -> custom exception raised
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length);
@@ -56,8 +91,9 @@ namespace SodukoSolver
                 if (inputChars[i] < '0' || inputChars[i] > (char)(SIZE + '0'))
                     throw new InvalidInputCharException("Invalid char in index " + i + " of the inputted puzzle");
             }
-            
+
             // timing the solution process -> starting stopwatch, solving and printing solution time
+            Console.WriteLine("\nGOT IT! processing...");
             var timer = new Stopwatch();
             timer.Start();
             
@@ -76,10 +112,11 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    initialSodukoBoard[i, j] = validInput[index] - '0'; // converting chars from their ascii codes to actual int values
+                    initialSodukoBoard[i, j] = new Cell(validInput[index] - '0'); // creating cells and converting chars from their ascii codes to actual int values
                     index++;
                 }
             }
+            UpdatePossibleValuesForEmpty();
             return CallByOrder();
         }
 
@@ -91,31 +128,20 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    if (initialSodukoBoard[i, j] != 0)
+                    if (initialSodukoBoard[i, j].Value != 0)
                     {
                         // saving the current num, changing to -1 and checking if can be there. if true -> change back to num and continue, if false -> custom exception raised
-                        int temp = initialSodukoBoard[i, j];
-                        initialSodukoBoard[i, j] = -1;
-                        if (!calculation.CanBePlaced(i, j, temp))
+                        int temp = initialSodukoBoard[i, j].Value;
+                        initialSodukoBoard[i, j].Value = -1;
+                        if (!Calculation.CanBePlaced(i, j, temp))
                             throw new InvalidInputPlaceException("***Invalid inputted puzzle: can't place " + temp + " in place [" + (i + 1) + ", " + (j + 1) + "] of the puzzle***");
-                        initialSodukoBoard[i, j] = temp;
+                        initialSodukoBoard[i, j].Value = temp;
                     }
                 }
             }
 
-            int zeroCounter = 0;
-            for (int i = 0; i < SIZE; i++) // counting the number of filled cells
-            {
-                for (int j = 0; j < SIZE; j++)
-                {
-                    if (initialSodukoBoard[i, j] == 0)
-                        zeroCounter++;
-                }
-            }
-
-            // if more than half of the cells are empty -> calling SimpleElimination before backtracking to optimize solving time
-            if (zeroCounter > (SIZE * SIZE / 2)) 
-                while (calculation.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+            //Optimize optimize = new Optimize();
+            //optimize.HiddenDoubles();
 
             bool answer = calculation.SolveSudoku();
             return SodukoResult(answer); // calling the function that prints the solved string
@@ -153,7 +179,7 @@ namespace SodukoSolver
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    solvedSodukoString.Append((char)(initialSodukoBoard[i, j] + '0')); // converting back the values to their assigned chars
+                    solvedSodukoString.Append((char)(initialSodukoBoard[i, j].Value + '0')); // converting back the values to their assigned chars
                 }
             }
 
@@ -167,7 +193,24 @@ namespace SodukoSolver
             Console.WriteLine("THANK YOU FOR USING MY SODUKO SOLVER! HOPE TO SEE YOU AGAIN SOON :)");
             Console.WriteLine("Made by @Ori_Boteach");
             Console.WriteLine("Press any key to exit your solver");
-            Console.ReadKey();
+        }
+
+        public void UpdatePossibleValuesForEmpty()
+        {
+            for(int i=0; i < SIZE; i++)
+            {
+                for (int j = 0; j < SIZE; j++)
+                {
+                    if (initialSodukoBoard[i, j].Value == 0)
+                    {
+                        for (int k = 1; k <= SIZE; k++)
+                        {
+                            if (Calculation.CanBePlaced(i, j, k)==false)
+                                initialSodukoBoard[i, j].PossibleValues.Remove(k);
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -62,11 +62,11 @@ namespace SodukoSolverTests
             // For a non existing file:
             // Arrange
             string input = "C:\\Users\\user\\Downloads\\not_on_pc.txt";
-            StringReader stringReader = new StringReader(input);
+            StringReader stringReader = new(input);
             Console.SetIn(stringReader);
             
             string expectedOutput = "\nEnter the file path:\r\n\nError: File not found -> file path should be like C:\\Users\\user\\Downloads\\sudoku_example.txt\r\n";
-            StringWriter stringWriter = new StringWriter();
+            StringWriter stringWriter = new();
             Console.SetOut(stringWriter);
             // Act
             _ui.getInputAsFile();
