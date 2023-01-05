@@ -4,46 +4,106 @@ namespace SodukoSolver
 {
     class Calculation
     {
-        public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
+        //public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
+        //{
+        //    // initializing variables to store the position of the first empty cell
+        //    int row = 0;
+        //    int col = 0;
+        //    bool isEmpty = true;
+
+        //    // searching for the first empty cell
+        //    for (int i = 0; i < UI.SIZE; i++)
+        //    {
+        //        for (int j = 0; j < UI.SIZE; j++)
+        //        {
+        //            if (UI.initialSodukoBoard[i, j].Value == 0) // if found empty cell -> storing it's information
+        //            {
+        //                row = i;
+        //                col = j;
+        //                isEmpty = false;
+        //                break;
+        //            }
+        //        }
+        //        if (!isEmpty) // if found empty cell -> breaking from the loop
+        //            break;
+        //    }
+
+        //    if (isEmpty) // if no empty cells are found, the puzzle is already solved
+        //        return true;
+
+        //    // trying to fill the empty cell with a number from 1 to soduko's SIZE
+        //    foreach (int num in UI.initialSodukoBoard[row, col].PossibleValues)
+        //    {
+        //        if (CanBePlaced(row, col, num)) // checking if the current value can be places if this cell
+        //        {
+        //            UI.initialSodukoBoard[row, col].Value = num; // placing the correct number in the empty cell
+
+        //            if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
+        //                return true;
+        //            else
+        //                UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
+        //        }
+        //    }
+        //    return false;
+        //}
+
+        public bool SolveSudoku()
         {
-            // initializing variables to store the position of the first empty cell
+            Optimize optimize = new Optimize();
+            bool appliedOptimization; // Flag to track if an optimization technique was applied
+
+            // Keep applying optimization techniques until they can no longer be applied
+            do
+            {
+                appliedOptimization = optimize.SimpleElimination();
+                if (!appliedOptimization)
+                {
+                    appliedOptimization = optimize.HiddenSingle();
+                }
+                if (!appliedOptimization)
+                {
+                    appliedOptimization = optimize.NakedPairs();
+                }
+            }
+            while (appliedOptimization);
+
+            // Initialize variables to store the position of the cell with the minimum number of possible values
             int row = 0;
             int col = 0;
-            bool isEmpty = true;
+            int minPossibles = UI.SIZE + 1; // Set the initial value of minPossibles to be greater than SIZE
 
-            // searching for the first empty cell
+            // Update the position of the cell with the minimum number of possible values if necessary
             for (int i = 0; i < UI.SIZE; i++)
             {
                 for (int j = 0; j < UI.SIZE; j++)
                 {
-                    if (UI.initialSodukoBoard[i, j].Value == 0) // if found empty cell -> storing it's information
+                    if (UI.initialSodukoBoard[i, j].Value == 0 && UI.initialSodukoBoard[i, j].PossibleValues.Count < minPossibles)
                     {
                         row = i;
                         col = j;
-                        isEmpty = false;
-                        break;
+                        minPossibles = UI.initialSodukoBoard[i, j].PossibleValues.Count;
                     }
                 }
-                if (!isEmpty) // if found empty cell -> breaking from the loop
-                    break;
             }
 
-            if (isEmpty) // if no empty cells are found, the puzzle is already solved
+            // If all cells are filled, the puzzle is already solved
+            if (minPossibles == UI.SIZE + 1)
                 return true;
 
-            // trying to fill the empty cell with a number from 1 to soduko's SIZE
+            // Try filling the cell with the minimum number of possible values
             foreach (int num in UI.initialSodukoBoard[row, col].PossibleValues)
             {
-                if (CanBePlaced(row, col, num)) // checking if the current value can be places if this cell
+                if (IsValidBitwise(row, col, num))
                 {
-                    UI.initialSodukoBoard[row, col].Value = num; // placing the correct number in the empty cell
+                    UI.initialSodukoBoard[row, col].Value = num;
 
-                    if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
+                    if (SolveSudoku())
                         return true;
-                    else
-                        UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
+
+                    UI.initialSodukoBoard[row, col].Value = 0;
                 }
             }
+
             return false;
         }
 
@@ -77,6 +137,50 @@ namespace SodukoSolver
                 }
             }
             return true; // if num passed all tests -> returns true to SolveSudoku
+        }
+        
+        public static bool IsValidBitwise(int row, int col, int num)
+        {
+            // check row using bitmask
+            int rowMask = 0;
+            for (int i = 0; i < UI.SIZE; i++)
+            {
+                rowMask |= 1 << UI.initialSodukoBoard[row, i].Value;
+            }
+            if ((rowMask & (1 << num)) > 0)
+            {
+                return false;
+            }
+
+            // check col using bitmask
+            int colMask = 0;
+            for (int i = 0; i < UI.SIZE; i++)
+            {
+                colMask |= 1 << UI.initialSodukoBoard[i, col].Value;
+            }
+            if ((colMask & (1 << num)) > 0)
+            {
+                return false;
+            }
+
+            // check sub grid using bitmask
+            int gridMask = 0;
+            int startRow = row - row % (int)Math.Sqrt(UI.SIZE);
+            int startCol = col - col % (int)Math.Sqrt(UI.SIZE);
+            for (int i = 0; i < (int)Math.Sqrt(UI.SIZE); i++)
+            {
+                for (int j = 0; j < (int)Math.Sqrt(UI.SIZE); j++)
+                {
+                    gridMask |= 1 << UI.initialSodukoBoard[startRow + i, startCol + j].Value;
+                }
+            }
+            if ((gridMask & (1 << num)) > 0)
+            {
+                return false;
+            }
+
+            // number is valid
+            return true;
         }
     }
 }

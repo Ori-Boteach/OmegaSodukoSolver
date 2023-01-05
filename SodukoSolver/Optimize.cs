@@ -2,6 +2,136 @@
 {
     class Optimize
     {
+        public bool NakedPairs()
+        {
+            bool appliedOptimization = false;
+
+            for (int row = 0; row < UI.SIZE; row++)
+            {
+                for (int col = 0; col < UI.SIZE; col++)
+                {
+                    if (UI.initialSodukoBoard[row, col].Value == 0 && UI.initialSodukoBoard[row, col].PossibleValues.Count == 2)
+                    {
+                        // Check if there are any other cells in the same row that have the same 2 possible values
+                        bool hasPair = false;
+
+                        for (int i = 0; i < UI.SIZE; i++)
+                        {
+                            if (i != row && UI.initialSodukoBoard[i, col].Value == 0 &&
+                                UI.initialSodukoBoard[i, col].PossibleValues.SetEquals(UI.initialSodukoBoard[row, col].PossibleValues))
+                            {
+                                hasPair = true;
+                                break;
+                            }
+                        }
+
+                        if (hasPair)
+                        {
+                            appliedOptimization = true;
+
+                            // Naked pair found, eliminate its values as possibilities for all other cells in the same row
+                            for (int i = 0; i < UI.SIZE; i++)
+                            {
+                                if (i != row && UI.initialSodukoBoard[i, col].Value == 0)
+                                {
+                                    foreach (int value in UI.initialSodukoBoard[row, col].PossibleValues)
+                                        appliedOptimization |= UI.initialSodukoBoard[i, col].PossibleValues.Remove(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //********************************************************************************
+            for (int col = 0; col < UI.SIZE; col++)
+            {
+                for (int row = 0; row < UI.SIZE; row++)
+                {
+                    if (UI.initialSodukoBoard[row, col].Value == 0 && UI.initialSodukoBoard[row, col].PossibleValues.Count == 2)
+                    {
+                        // Check if there are any other cells in the same col that have the same 2 possible values
+                        bool hasPair = false;
+                        
+                        for (int i = 0; i < UI.SIZE; i++)
+                        {
+                            if (i != col && UI.initialSodukoBoard[row, i].Value == 0 &&
+                                UI.initialSodukoBoard[row, i].PossibleValues.SetEquals(UI.initialSodukoBoard[row, col].PossibleValues))
+                            {
+                                hasPair = true;
+                                break;
+                            }
+                        }
+
+                        if (hasPair)
+                        {
+                            appliedOptimization = true;
+
+                            // Naked pair found, eliminate its values as possibilities for all other cells in the same col
+                            for (int i = 0; i < UI.SIZE; i++)
+                            {
+                                if (i != col && UI.initialSodukoBoard[row, i].Value == 0)
+                                {
+                                    foreach (int value in UI.initialSodukoBoard[row, col].PossibleValues)
+                                        appliedOptimization |= UI.initialSodukoBoard[row, i].PossibleValues.Remove(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //********************************************************************************
+
+            for (int subgridRow = 0; subgridRow < (int)Math.Sqrt(UI.SIZE); subgridRow++)
+            {
+                for (int subgridCol = 0; subgridCol < (int)Math.Sqrt(UI.SIZE); subgridCol++)
+                {
+                    for (int row = subgridRow * (int)Math.Sqrt(UI.SIZE); row < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); row++)
+                    {
+                        for (int col = subgridCol * (int)Math.Sqrt(UI.SIZE); col < (subgridCol + 1) * (int)Math.Sqrt(UI.SIZE); col++)
+                        {
+                            if (UI.initialSodukoBoard[row, col].Value == 0 && UI.initialSodukoBoard[row, col].PossibleValues.Count == 2)
+                            {
+                                // Check if there are any other cells in the same subgrid that have the same 2 possible values
+                                bool hasPair = false;
+
+                                for (int i = subgridRow * (int)Math.Sqrt(UI.SIZE); i < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); i++)
+                                {
+                                    for (int j = subgridCol * (int)Math.Sqrt(UI.SIZE); j < (subgridCol + 1) * (int)Math.Sqrt(UI.SIZE); j++)
+                                    {
+                                        if (i != row && j != col && UI.initialSodukoBoard[i, j].Value == 0 &&
+                                            UI.initialSodukoBoard[i, j].PossibleValues.SetEquals(UI.initialSodukoBoard[row, col].PossibleValues))
+                                        {
+                                            hasPair = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (hasPair)
+                                {
+                                    appliedOptimization = true;
+
+                                    // Naked pair found, eliminate its values as possibilities for all other cells in the same subgrid
+                                    for (int i = subgridRow * (int)Math.Sqrt(UI.SIZE); i < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); i++)
+                                    {
+                                        for (int j = subgridCol * (int)Math.Sqrt(UI.SIZE); j < (subgridCol + 1) * (int)Math.Sqrt(UI.SIZE); j++)
+                                        {
+                                            if (i != row && j != col && UI.initialSodukoBoard[i, j].Value == 0)
+                                            {
+                                                foreach (int value in UI.initialSodukoBoard[row, col].PossibleValues)
+                                                    appliedOptimization |= UI.initialSodukoBoard[row, i].PossibleValues.Remove(value);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return appliedOptimization;
+        }
+
         //applying Simple Elimination algorithm -> placing the correct value in cells that have only one value option
         public bool SimpleElimination()
         {

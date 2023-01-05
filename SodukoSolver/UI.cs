@@ -152,10 +152,11 @@ namespace SodukoSolver
             if (zeroCounter > (SIZE * SIZE / 2))
             {
                 Optimize optimize = new Optimize();
-                while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
-                while (optimize.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
-                while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
-                optimize.HiddenDoubles();
+                //while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
+                //while (optimize.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
+                //while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
+                //optimize.HiddenDoubles();
+                //optimize.NakedPairs();
             }
 
             bool answer = calculation.SolveSudoku();
