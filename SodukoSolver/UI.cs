@@ -9,6 +9,7 @@ namespace SodukoSolver
     public class UI
     {
         public static int SIZE;
+        public static int CUBE_SIZE;
         public static Cell[,] initialSodukoBoard;
 
         // when the user enters a keyboard interrupt (Ctrl+C) this event will be called to display end message and end the program
@@ -77,6 +78,7 @@ namespace SodukoSolver
             List<int> possibleSizes = new List<int> {1, 4, 9, 16, 25}; // a list that holds all possible soduko sizes
 
             SIZE = (int)Math.Sqrt(input.Length);
+            CUBE_SIZE = (int)Math.Sqrt(UI.SIZE);
             initialSodukoBoard = new Cell[SIZE, SIZE];
 
             if (!possibleSizes.Contains(SIZE)) // if user input's length is invalid -> custom exception raised
@@ -138,26 +140,8 @@ namespace SodukoSolver
                 }
             }
 
-            int zeroCounter = 0;
-            for (int i = 0; i < SIZE; i++) // counting the number of filled cells
-            {
-                for (int j = 0; j < SIZE; j++)
-                {
-                    if (initialSodukoBoard[i, j].Value == 0)
-                        zeroCounter++;
-                }
-            }
-
-            // if more than half of the cells are empty -> calling SimpleElimination & HiddenSingle before backtracking to optimize solving time
-            if (zeroCounter > (SIZE * SIZE / 2))
-            {
-                Optimize optimize = new Optimize();
-                //while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps 
-                //while (optimize.HiddenSingle() == true) ; // calling HiddenSingle while it stills helps 
-                //while (optimize.SimpleElimination() == true) ; // calling SimpleElimination while it stills helps
-                //optimize.HiddenDoubles();
-                //optimize.NakedPairs();
-            }
+            //Optimize optimize = new Optimize();
+            //optimize.HiddenDoubles();
 
             bool answer = calculation.SolveSudoku();
             return SodukoResult(answer); // calling the function that prints the solved string

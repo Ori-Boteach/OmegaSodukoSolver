@@ -81,22 +81,22 @@
             }
             //********************************************************************************
 
-            for (int subgridRow = 0; subgridRow < (int)Math.Sqrt(UI.SIZE); subgridRow++)
+            for (int subgridRow = 0; subgridRow < UI.CUBE_SIZE; subgridRow++)
             {
-                for (int subgridCol = 0; subgridCol < (int)Math.Sqrt(UI.SIZE); subgridCol++)
+                for (int subgridCol = 0; subgridCol < UI.CUBE_SIZE; subgridCol++)
                 {
-                    for (int row = subgridRow * (int)Math.Sqrt(UI.SIZE); row < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); row++)
+                    for (int row = subgridRow * UI.CUBE_SIZE; row < (subgridRow + 1) * UI.CUBE_SIZE; row++)
                     {
-                        for (int col = subgridCol * (int)Math.Sqrt(UI.SIZE); col < (subgridCol + 1) * (int)Math.Sqrt(UI.SIZE); col++)
+                        for (int col = subgridCol * UI.CUBE_SIZE; col < (subgridCol + 1) * UI.CUBE_SIZE; col++)
                         {
                             if (UI.initialSodukoBoard[row, col].Value == 0 && UI.initialSodukoBoard[row, col].PossibleValues.Count == 2)
                             {
                                 // Check if there are any other cells in the same subgrid that have the same 2 possible values
                                 bool hasPair = false;
 
-                                for (int i = subgridRow * (int)Math.Sqrt(UI.SIZE); i < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); i++)
+                                for (int i = subgridRow * UI.CUBE_SIZE; i < (subgridRow + 1) * UI.CUBE_SIZE; i++)
                                 {
-                                    for (int j = subgridCol * (int)Math.Sqrt(UI.SIZE); j < (subgridCol + 1) * (int)Math.Sqrt(UI.SIZE); j++)
+                                    for (int j = subgridCol * UI.CUBE_SIZE; j < (subgridCol + 1) * UI.CUBE_SIZE; j++)
                                     {
                                         if (i != row && j != col && UI.initialSodukoBoard[i, j].Value == 0 &&
                                             UI.initialSodukoBoard[i, j].PossibleValues.SetEquals(UI.initialSodukoBoard[row, col].PossibleValues))
@@ -112,9 +112,9 @@
                                     appliedOptimization = true;
 
                                     // Naked pair found, eliminate its values as possibilities for all other cells in the same subgrid
-                                    for (int i = subgridRow * (int)Math.Sqrt(UI.SIZE); i < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); i++)
+                                    for (int i = subgridRow * UI.CUBE_SIZE; i < (subgridRow + 1) * (int)Math.Sqrt(UI.SIZE); i++)
                                     {
-                                        for (int j = subgridCol * (int)Math.Sqrt(UI.SIZE); j < (subgridCol + 1) * (int)Math.Sqrt(UI.SIZE); j++)
+                                        for (int j = subgridCol * UI.CUBE_SIZE; j < (subgridCol + 1) * UI.CUBE_SIZE; j++)
                                         {
                                             if (i != row && j != col && UI.initialSodukoBoard[i, j].Value == 0)
                                             {

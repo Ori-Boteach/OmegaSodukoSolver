@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SodukoSolver
+﻿namespace SodukoSolver
 {
     class Calculation
     {
@@ -165,11 +163,11 @@ namespace SodukoSolver
 
             // check sub grid using bitmask
             int gridMask = 0;
-            int startRow = row - row % (int)Math.Sqrt(UI.SIZE);
-            int startCol = col - col % (int)Math.Sqrt(UI.SIZE);
-            for (int i = 0; i < (int)Math.Sqrt(UI.SIZE); i++)
+            int startRow = row - row % UI.CUBE_SIZE;
+            int startCol = col - col % UI.CUBE_SIZE;
+            for (int i = 0; i < UI.CUBE_SIZE; i++)
             {
-                for (int j = 0; j < (int)Math.Sqrt(UI.SIZE); j++)
+                for (int j = 0; j < UI.CUBE_SIZE; j++)
                 {
                     gridMask |= 1 << UI.initialSodukoBoard[startRow + i, startCol + j].Value;
                 }
