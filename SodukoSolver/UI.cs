@@ -2,7 +2,7 @@
 using System.Diagnostics;
 #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
 #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
-#pragma warning disable CS8604 // disable -> possible null reference argument
+#pragma warning disable CS8622 // disable -> Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 
 namespace SodukoSolver
 {
@@ -10,14 +10,27 @@ namespace SodukoSolver
     {
         public static int SIZE;
         public static Cell[,] initialSodukoBoard;
-        public static HashSet<int>[] rowValues = new HashSet<int>[SIZE];
-        public static HashSet<int>[] colValues = new HashSet<int>[SIZE];
-        public static HashSet<int>[] cubeValues = new HashSet<int>[SIZE];
+
+        // when the user enters a keyboard interrupt (Ctrl+C) this event will be called to display end message and end the program
+        public void OnKeyboardInterruptEvent(object sender, ConsoleCancelEventArgs e)
+        {
+            Console.WriteLine("\nKeyboard interrupt detected... Teminating, start over");
+            e.Cancel = true; // Set the Cancel property to true to prevent the process from being terminated
+            Environment.Exit(0); // Terminate the program
+        }
 
         public void getInputAsFile() // recieving the input from the user as a string from a file by provided file path
         {
+            // displaying a message to the user (via an event) when a keyboard interrupt is detected
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(OnKeyboardInterruptEvent);
+
             Console.WriteLine("\nEnter the file path:");
             string filePath = Console.ReadLine();
+            
+            if (filePath == null) // Check if the input string is null
+            {
+                throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
+            }
 
             try
             {
@@ -43,12 +56,21 @@ namespace SodukoSolver
                 Console.WriteLine("\nError reading file");
             }
         }
-        public void getInputAsString() // recieving the input from the user as a string from the console
+        public void getInputAsString()
         {
+            // displaying a message to the user (via an event) when a keyboard interrupt is detected
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(OnKeyboardInterruptEvent);
+
             Console.WriteLine("\nPlease enter the soduko pazzle that you need solved at a string format and press enter:");
             string input = Console.ReadLine();
+            
+            if (input == null) // checking if the input string is null
+            {
+                throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
+            }
             ValidationAndStart(input);
         }
+
 
         public string ValidationAndStart(string input) // validating the input and starting the calculation process
         {
@@ -186,7 +208,6 @@ namespace SodukoSolver
             Console.WriteLine("THANK YOU FOR USING MY SODUKO SOLVER! HOPE TO SEE YOU AGAIN SOON :)");
             Console.WriteLine("Made by @Ori_Boteach");
             Console.WriteLine("Press any key to exit your solver");
-            Console.ReadKey();
         }
 
         public void UpdatePossibleValuesForEmpty()
