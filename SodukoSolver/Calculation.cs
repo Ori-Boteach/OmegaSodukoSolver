@@ -54,14 +54,12 @@
             do
             {
                 appliedOptimization = optimize.SimpleElimination();
+                
                 if (!appliedOptimization)
-                {
                     appliedOptimization = optimize.HiddenSingle();
-                }
+                
                 if (!appliedOptimization)
-                {
                     appliedOptimization = optimize.NakedPairs();
-                }
             }
             while (appliedOptimization);
 

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Diagnostics;
+using SodukoSolver.DLX;
 #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
 #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
 #pragma warning disable CS8622 // disable -> Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
@@ -11,6 +12,7 @@ namespace SodukoSolver
         public static int SIZE;
         public static int CUBE_SIZE;
         public static Cell[,] initialSodukoBoard;
+        public static int[,] initialSodukoMatrix;
 
         // when the user enters a keyboard interrupt (Ctrl+C) this event will be called to display end message and end the program
         public void OnKeyboardInterruptEvent(object sender, ConsoleCancelEventArgs e)
@@ -80,6 +82,7 @@ namespace SodukoSolver
             SIZE = (int)Math.Sqrt(input.Length);
             CUBE_SIZE = (int)Math.Sqrt(UI.SIZE);
             initialSodukoBoard = new Cell[SIZE, SIZE];
+            initialSodukoMatrix = new int[SIZE, SIZE];
 
             if (!possibleSizes.Contains(SIZE)) // if user input's length is invalid -> custom exception raised
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length);
@@ -113,6 +116,7 @@ namespace SodukoSolver
                 for (int j = 0; j < SIZE; j++)
                 {
                     initialSodukoBoard[i, j] = new Cell(validInput[index] - '0'); // creating cells and converting chars from their ascii codes to actual int values
+                    initialSodukoMatrix[i, j] = validInput[index] - '0';
                     index++;
                 }
             }
@@ -139,9 +143,15 @@ namespace SodukoSolver
                     }
                 }
             }
-
-            //Optimize optimize = new Optimize();
-            //optimize.HiddenDoubles();
+            
+            if(SIZE!=1)
+            {
+                CallDLX callDLX = new CallDLX();
+                callDLX.Call(initialSodukoMatrix);
+            }
+            
+            Optimize optimize = new Optimize();
+            optimize.HiddenDoubles();
 
             bool answer = calculation.SolveSudoku();
             return SodukoResult(answer); // calling the function that prints the solved string
