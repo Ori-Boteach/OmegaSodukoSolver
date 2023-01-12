@@ -2,6 +2,7 @@
 using System.Text;
 using SodukoSolver.Backtracking;
 using SodukoSolver.DLX;
+
 #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value
 #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
 #pragma warning disable CS8622 // disable -> Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
@@ -10,8 +11,12 @@ namespace SodukoSolver
 {
     public class UI
     {
+        // setting global variables
         public static int SIZE;
         public static int CUBE_SIZE;
+
+        public static bool isFromFile = false;
+        
         public static Cell[,] initialSodukoBoard;
         public static int[,] initialSodukoMatrix;
 
@@ -47,7 +52,9 @@ namespace SodukoSolver
                 {
                     throw new ArgumentNullException();
                 }
-                
+
+                isFromFile = true; // setting the isFromFile variable to true to indicate that the input is from a file
+
                 Console.WriteLine("\nSOLVING THIS SODUKO:\n"+input);
                 ValidationAndStart(input);
             }
@@ -155,7 +162,16 @@ namespace SodukoSolver
             optimize.HiddenDoubles();
 
             bool answer = calculation.SolveSudoku();
-            return SodukoResult(answer); // calling the function that prints the solved string
+            
+            string result = SodukoResult(answer); // calling the function that prints the solved string
+            
+            if (isFromFile) // if given sudoku came from a file -> writing it's solution to a sudoku_result text file in addition to printing it to the console 
+            {
+                File.WriteAllTextAsync("C:\\Users\\user\\Downloads\\sudoku_result.txt", result);
+                Console.WriteLine("\n(your solved soduko is also in C:\\Users\\user\\Downloads\\sudoku_result.txt)");
+            }
+
+            return result;
         }
 
         // a function that returns the answer to the user, if solvable ->  prints the solved soduko, if not -> prints a message
