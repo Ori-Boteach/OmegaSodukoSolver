@@ -1,7 +1,30 @@
-﻿namespace SodukoSolver.Backtracking
+﻿using System.Diagnostics;
+using System.Text;
+
+namespace SodukoSolver.Backtracking
 {
-    class Calculation
+    class BacktrackCalculation
     {
+        public string InitiateBacktracking() // the function that handles all of the backtracking solvig operation
+        {                
+            // setting up the timer and starting it 
+            var timer = new Stopwatch();
+            timer.Start();
+            
+            Optimize optimize = new();
+            optimize.HiddenDoubles(); // calling the HiddenDoubles method to optimize the soduko board
+
+            BacktrackCalculation calculation = new();
+            bool answer = calculation.SolveSudoku(); // solving the sudoku using backtracking algorithm
+                                                    
+            // stopping the timer and printing the answer
+            timer.Stop();
+            TimeSpan timeTaken = timer.Elapsed;
+            Console.WriteLine("\nTime taken for BACKTRACKING solve: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
+
+            return SodukoResult(answer); // calling the function that prints the solved string
+        }
+        
         public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
         {
             Optimize optimize = new();
@@ -10,13 +33,13 @@
             // keep applying optimization techniques until they can no longer be applied
             do
             {
-                appliedOptimization = optimize.SimpleElimination();
+                appliedOptimization = optimize.SimpleElimination(); // calling the SimpleElimination method to optimize the soduko board
 
                 if (!appliedOptimization)
-                    appliedOptimization = optimize.HiddenSingle();
+                    appliedOptimization = optimize.HiddenSingle(); // calling the HiddenSingle method to optimize the soduko board
 
                 if (!appliedOptimization)
-                    appliedOptimization = optimize.NakedPairs();
+                    appliedOptimization = optimize.NakedPairs(); // calling the NakedPairs method to optimize the soduko board
             }
             while (appliedOptimization);
 
@@ -90,6 +113,50 @@
                 }
             }
             return true; // if num passed all tests -> returns true to SolveSudoku
+        }
+
+        // a function that returns the answer, if solvable ->  prints the solved soduko, if not -> prints a message
+        public static string SodukoResult(bool answer)
+        {
+            if (!answer) // if the returned value from SolveSudoku is flase -> soduko is UNSOLVABLE
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\n***The soduko is unsolvable***");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                return "***The soduko is unsolvable***";
+            }
+            else
+            {
+                Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
+                return PrintBoard();
+            }
+        }
+
+        // printing the solution of the given Soduko puzzle at a string format
+        public static string PrintBoard()
+        {
+            string solvedSodukoString = ConvertBackToString();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(solvedSodukoString);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            return solvedSodukoString;
+        }
+
+        public static string ConvertBackToString() // converting a soduko represented as a 2D array to string representation
+        {
+            // creating a string builder to store the solved puzzle -> appending to it char by char
+            StringBuilder solvedSodukoString = new();
+
+            for (int row = 0; row < UI.SIZE; row++)
+            {
+                for (int col = 0; col < UI.SIZE; col++)
+                {
+                    solvedSodukoString.Append((char)(UI.initialSodukoBoard[row, col].Value + '0')); // converting back the values to their assigned chars
+                }
+            }
+
+            // returning the soduko string
+            return solvedSodukoString.ToString();
         }
     }
 }

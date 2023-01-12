@@ -1,8 +1,8 @@
-﻿namespace SodukoSolver
-{
-    #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
-    #pragma warning disable CS8622 // disable -> Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+﻿#pragma warning disable CS8600 // disable warning -> converting null literal or possible null value to non nullable type
+#pragma warning disable CS8622 // disable warning -> Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 
+namespace SodukoSolver
+{
     class Program
     {
         static void Main(string[] args)

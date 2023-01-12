@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 
 namespace SodukoSolver.DLX
 {
@@ -10,7 +11,7 @@ namespace SodukoSolver.DLX
     {
         public static int given_SIZE; // the sudoku's size
 
-        public void InitiateDLX(int[,] board)
+        public string InitiateDLX(int[,] board) // the function that handles all of the dlx solvig operation
         {
             given_SIZE = board.GetLength(0); // set the sudoku's size as a globl variable
             int[,] ConstraintsMatrix = DLX.ConstraintsMatrix.ConvertSudokuBoard(board); // convert given sudoku board to big 0/1 matrix according to sudoku constraints
@@ -23,16 +24,35 @@ namespace SodukoSolver.DLX
             var timer = new Stopwatch();
             timer.Start();
 
-            bool result = dLX.Search(dLX.GetSolution()); // call the Search method for a solution
-            if (!result)
-                Console.WriteLine("No Solution!");
+            string answer;
+            if (given_SIZE == 1) // if given sudoku is 1 by 1 -> skip search, solution must be 1
+            {
+                Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("1");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                answer = "1";
+            }
             else
-                dLX.ConvertBackToMatrix();
+            {
+                bool result = dLX.Search(dLX.GetSolution()); // call the Search method for a solution
+                if (!result)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n***The soduko is unsolvable***");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    answer = "***The soduko is unsolvable***";
+                }
+                else
+                    answer = dLX.ConvertBackToMatrix();
+            }
 
             // stopping the timer and printing the answer
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("\nTime taken for DLX solving operation: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
+            Console.WriteLine("\n\nTime taken for DLX solve: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
+
+            return answer;
         }
     }
     
@@ -152,7 +172,7 @@ namespace SodukoSolver.DLX
             return saveHeader; // returning the column header with the mininum amount of nodes under it
         }
 
-        public void ConvertBackToMatrix() // converting the solution list back into a matrix and printing the solved sudoku board
+        public string ConvertBackToMatrix() // converting the solution list back into a matrix and printing the solved sudoku board
         {
             int[,] solvedBoard = new int[SIZE, SIZE];
             
@@ -177,14 +197,28 @@ namespace SodukoSolver.DLX
                 solvedBoard[row, col] = tempNode.right.columnHeader.name % SIZE + 1;
             }
 
-            // printing the board to the console at a matrix form
-            Console.WriteLine("The Solution:");
-            for (int i = 0; i < SIZE; i++)
+            // creating a string builder to store the solved puzzle -> appending to it char by char
+            StringBuilder solvedSodukoString = new();
+
+            for (int row = 0; row < SIZE; row++)
             {
-                for (int j = 0; j < SIZE; j++)
-                    Console.Write(solvedBoard[i, j] + " ");
-                Console.WriteLine("");
+                for (int col = 0; col < SIZE; col++)
+                {
+                    solvedSodukoString.Append((char)(solvedBoard[row, col] + '0')); // converting back the values to their assigned chars
+                }
             }
+
+            // print solved sudoku as string
+            Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
+            Console.ForegroundColor = ConsoleColor.Green;
+
+            for (int stringIndex=0;stringIndex<solvedSodukoString.Length;stringIndex++)
+                Console.Write(solvedSodukoString[stringIndex]);
+            
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            // returning the soduko string
+            return solvedSodukoString.ToString();
         }
 
         private static void Cover(Node targetNode) // covering the given node completely -> unlinking it from the mesh
