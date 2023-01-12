@@ -1,24 +1,26 @@
-﻿namespace SodukoSolver
+﻿namespace SodukoSolver.Backtracking
 {
     class Optimize
     {
+        // applying Naked Pairs algorithm:
+        // eliminating candidates from other cells in the same row, column, or block where two cells have the same two candidates
         public bool NakedPairs()
         {
             bool appliedOptimization = false;
 
+            // check for Naked Pairs in rows
             for (int row = 0; row < UI.SIZE; row++)
             {
                 for (int col = 0; col < UI.SIZE; col++)
                 {
                     if (UI.initialSodukoBoard[row, col].Value == 0 && UI.initialSodukoBoard[row, col].PossibleValues.Count == 2)
                     {
-                        // Check if there are any other cells in the same row that have the same 2 possible values
+                        // check if there are any other cells in the same row that have the same 2 possible values
                         bool hasPair = false;
 
                         for (int i = 0; i < UI.SIZE; i++)
                         {
-                            if (i != row && UI.initialSodukoBoard[i, col].Value == 0 &&
-                                UI.initialSodukoBoard[i, col].PossibleValues.SetEquals(UI.initialSodukoBoard[row, col].PossibleValues))
+                            if (i != row && UI.initialSodukoBoard[i, col].Value == 0 && UI.initialSodukoBoard[i, col].PossibleValues.SetEquals(UI.initialSodukoBoard[row, col].PossibleValues))
                             {
                                 hasPair = true;
                                 break;
@@ -29,7 +31,7 @@
                         {
                             appliedOptimization = true;
 
-                            // Naked pair found, eliminate its values as possibilities for all other cells in the same row
+                            // naked pair found, eliminate its values as possibilities for all other cells in the same row
                             for (int i = 0; i < UI.SIZE; i++)
                             {
                                 if (i != row && UI.initialSodukoBoard[i, col].Value == 0)
@@ -42,16 +44,17 @@
                     }
                 }
             }
-            //********************************************************************************
+
+            // check for Naked Pairs in columns
             for (int col = 0; col < UI.SIZE; col++)
             {
                 for (int row = 0; row < UI.SIZE; row++)
                 {
                     if (UI.initialSodukoBoard[row, col].Value == 0 && UI.initialSodukoBoard[row, col].PossibleValues.Count == 2)
                     {
-                        // Check if there are any other cells in the same col that have the same 2 possible values
+                        // check if there are any other cells in the same col that have the same 2 possible values
                         bool hasPair = false;
-                        
+
                         for (int i = 0; i < UI.SIZE; i++)
                         {
                             if (i != col && UI.initialSodukoBoard[row, i].Value == 0 &&
@@ -66,21 +69,19 @@
                         {
                             appliedOptimization = true;
 
-                            // Naked pair found, eliminate its values as possibilities for all other cells in the same col
+                            // naked pair found, eliminate its values as possibilities for all other cells in the same col
                             for (int i = 0; i < UI.SIZE; i++)
                             {
                                 if (i != col && UI.initialSodukoBoard[row, i].Value == 0)
-                                {
                                     foreach (int value in UI.initialSodukoBoard[row, col].PossibleValues)
-                                        appliedOptimization |= UI.initialSodukoBoard[row, i].PossibleValues.Remove(value);
-                                }
+                                        appliedOptimization |= UI.initialSodukoBoard[i, col].PossibleValues.Remove(value);
                             }
                         }
                     }
                 }
             }
-            //********************************************************************************
-
+            
+            // check for Naked Pairs in sub cubes
             for (int subgridRow = 0; subgridRow < UI.CUBE_SIZE; subgridRow++)
             {
                 for (int subgridCol = 0; subgridCol < UI.CUBE_SIZE; subgridCol++)
@@ -159,9 +160,9 @@
                         // if a value is already in cube -> marking it in the possibleValues array
                         int cubeRow = row - row % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
                         int cubeCol = col - col % (UI.SIZE / (int)Math.Sqrt(UI.SIZE));
-                        for (int i = cubeRow; i < cubeRow + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); i++)
+                        for (int i = cubeRow; i < cubeRow + UI.SIZE / (int)Math.Sqrt(UI.SIZE); i++)
                         {
-                            for (int j = cubeCol; j < cubeCol + (UI.SIZE / (int)Math.Sqrt(UI.SIZE)); j++)
+                            for (int j = cubeCol; j < cubeCol + UI.SIZE / (int)Math.Sqrt(UI.SIZE); j++)
                             {
                                 if (UI.initialSodukoBoard[i, j].Value > 0)
                                     possibleValues[UI.initialSodukoBoard[i, j].Value - 1] = 1;
@@ -192,7 +193,7 @@
             return positionedValue;
         }
 
-        private void UpdatePossiblesForCells(int row, int col)
+        private static void UpdatePossiblesForCells(int row, int col)
         {
             int value = UI.initialSodukoBoard[row, col].Value;
 
@@ -230,6 +231,8 @@
             }
         }
 
+        // applying Hidden Single algorithm:
+        // placing the correct value in cells that have only one possible value, after checking other cells in the same row, column, or block
         public bool HiddenSingle()
         {
             bool positionedValue = false; // checking if there was a positioning of a value in the board
@@ -287,7 +290,7 @@
                 }
             }
 
-            for (int blockRow = 0; blockRow < (int)Math.Sqrt(UI.SIZE); blockRow++) // go over each subgrid
+            for (int blockRow = 0; blockRow < (int)Math.Sqrt(UI.SIZE); blockRow++) // go over each sub-cube
             {
                 for (int blockCol = 0; blockCol < (int)Math.Sqrt(UI.SIZE); blockCol++)
                 {
@@ -323,7 +326,10 @@
             // return true if any changes were made, false otherwise
             return positionedValue;
         }
-        
+
+        // applying Hidden Doubles algorithm:
+        // placing the correct values in cells that have only two possible values,
+        // after looking for two cells in the same row, column or block that share the same two candidates, meaning that no other cell in those constraints can contain those values
         public void HiddenDoubles()
         {
             for (int row = 0; row < UI.SIZE; row++)
@@ -338,7 +344,7 @@
                         HashSet<int> cubeValues = GetCubeValues(row, col);
 
                         // find the intersection of the possible values for the row, column, and cube
-                        HashSet<int> intersection = new HashSet<int>(rowValues);
+                        HashSet<int> intersection = new(rowValues);
                         intersection.IntersectWith(colValues);
                         intersection.IntersectWith(cubeValues);
 
@@ -354,84 +360,83 @@
             }
         }
 
-        private HashSet<int> GetRowValues(int row)
+        // helper function to get all the values in a specific row
+        private static HashSet<int> GetRowValues(int row)
         {
-            HashSet<int> values = new HashSet<int>();
+            HashSet<int> values = new();
             for (int col = 0; col < UI.SIZE; col++)
             {
                 Cell cell = UI.initialSodukoBoard[row, col];
+                
                 if (cell.Value != 0) // only consider cells with a value
-                {
                     values.Add(cell.Value);
-                }
             }
             return values;
         }
-        private HashSet<int> GetColumnValues(int col)
+        
+        // helper function to get all the values in a specific column
+        private static HashSet<int> GetColumnValues(int col)
         {
-            HashSet<int> values = new HashSet<int>();
+            HashSet<int> values = new();
             for (int row = 0; row < UI.SIZE; row++)
             {
                 Cell cell = UI.initialSodukoBoard[row, col];
+                
                 if (cell.Value != 0) // only consider cells with a value
-                {
                     values.Add(cell.Value);
-                }
             }
             return values;
         }
 
-        private HashSet<int> GetCubeValues(int row, int col)
+        // helper function to get all the values in the specific cube that contains the current cell
+        private static HashSet<int> GetCubeValues(int row, int col)
         {
-            HashSet<int> values = new HashSet<int>();
+            HashSet<int> values = new();
 
             // calculate the top left cell of the cube that contains the current cell
-            int cubeStartRow = row - (row % (int)Math.Sqrt(UI.SIZE));
-            int cubeStartCol = col - (col % (int)Math.Sqrt(UI.SIZE));
+            int cubeStartRow = row - row % (int)Math.Sqrt(UI.SIZE);
+            int cubeStartCol = col - col % (int)Math.Sqrt(UI.SIZE);
 
             for (int i = 0; i < (int)Math.Sqrt(UI.SIZE); i++)
             {
                 for (int j = 0; j < (int)Math.Sqrt(UI.SIZE); j++)
                 {
                     Cell cell = UI.initialSodukoBoard[cubeStartRow + i, cubeStartCol + j];
+                    
                     if (cell.Value != 0) // only consider cells with a value
-                    {
                         values.Add(cell.Value);
-                    }
                 }
             }
             return values;
         }
 
-        private void RemoveValuesFromRow(int row, HashSet<int> values)
+        private static void RemoveValuesFromRow(int row, HashSet<int> values)
         {
             for (int col = 0; col < UI.SIZE; col++)
             {
                 Cell cell = UI.initialSodukoBoard[row, col];
+                
                 if (cell.Value == 0) // only consider empty cells
-                {
                     cell.PossibleValues.ExceptWith(values);
-                }
             }
         }
 
-        private void RemoveValuesFromColumn(int col, HashSet<int> values)
+        private static void RemoveValuesFromColumn(int col, HashSet<int> values)
         {
             for (int row = 0; row < UI.SIZE; row++)
             {
                 Cell cell = UI.initialSodukoBoard[row, col];
+                
                 if (cell.Value == 0) // only consider empty cells
-                {
                     cell.PossibleValues.ExceptWith(values);
-                }
             }
         }
 
-        private void RemoveValuesFromCube(int row, int col, HashSet<int> values)
+        private static void RemoveValuesFromCube(int row, int col, HashSet<int> values)
         {
             // calculate the top left cell of the cube that contains the current cell
-            int cubeStartRow = row - (row % (int)Math.Sqrt(UI.SIZE));
-            int cubeStartCol = col - (col % (int)Math.Sqrt(UI.SIZE));
+            int cubeStartRow = row - row % (int)Math.Sqrt(UI.SIZE);
+            int cubeStartCol = col - col % (int)Math.Sqrt(UI.SIZE);
 
             for (int i = 0; i < (int)Math.Sqrt(UI.SIZE); i++)
             {

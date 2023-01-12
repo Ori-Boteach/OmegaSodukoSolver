@@ -2,53 +2,64 @@
 
 namespace SodukoSolver.DLX
 {
-    public class CallDLX
+    #pragma warning disable CS8600 // disable -> converting null literal or possible null value to non nullable type
+    #pragma warning disable CS8603 // disable -> Possible null reference return.
+    #pragma warning disable CS8618 // disable -> Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    public class InitiatingDlxClass
     {
-        public static int given_SIZE;
-        
-        public void Call(int[,] board)
+        public static int given_SIZE; // the sudoku's size
+
+        public void InitiateDLX(int[,] board)
         {
+            given_SIZE = board.GetLength(0); // set the sudoku's size as a globl variable
+            int[,] ConstraintsMatrix = DLX.ConstraintsMatrix.ConvertSudokuBoard(board); // convert given sudoku board to big 0/1 matrix according to sudoku constraints
+
+            // create a new instance of the DancingLinksSolver class and convert to correlating node spares matrix
+            DancingLinksSolver dLX = new();
+            dLX.CreateDancingLinksMatrix(ConstraintsMatrix);
+
+            // setting up the timer and starting it 
             var timer = new Stopwatch();
             timer.Start();
-            
-            given_SIZE = board.GetLength(0);
-            int[,] bigMatrix = ConstraintsMatrix.ConvertSudoku(board); // convert given sudoku board to big 0/1 matrix according to sudoku constraints
-            
-            DancingLinksSolver dLX = new();
-            dLX.CreateDancingLinksMatrix(bigMatrix);
 
             bool result = dLX.Search(dLX.GetSolution()); // call the Search method for a solution
             if (!result)
                 Console.WriteLine("No Solution!");
+            else
+                dLX.ConvertBackToMatrix();
 
+            // stopping the timer and printing the answer
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
             Console.WriteLine("\nTime taken for DLX solving operation: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
         }
     }
-    public class DancingLinksSolver
+    
+    public class DancingLinksSolver // DancingLinksSolver class that converts constraints matrix to node spares matrix and performs the claculations
     {
-        public static readonly int SIZE = CallDLX.given_SIZE;
+        // setting global size variables
+        public static readonly int SIZE = InitiatingDlxClass.given_SIZE;
         public static readonly int CUBE_SIZE = (int)Math.Sqrt(SIZE);
         public static readonly int numRows = SIZE * SIZE * SIZE;
         public static readonly int numCols = 4 * SIZE * SIZE;
 
-        HeaderNode root; // root to the nodes mesh
+        private HeaderNode root; // root access to the nodes mesh
 
-        List<Node> solution = new(); // a list of nodes that represents the final solution
+        readonly List<Node> solution = new(); // a list of nodes that represents the final solution
 
-        public void CreateDancingLinksMatrix(int[,] ProbMat)
+        public void CreateDancingLinksMatrix(int[,] problamMatrix)
         {
-            root = new HeaderNode(-1); // initialize root's name to -1
+            root = new HeaderNode(-1); // initialize root's "name" to -1
 
-            HeaderNode[] headers = new HeaderNode[numCols];
+            HeaderNode[] matrixHeaders = new HeaderNode[numCols];
 
             for (int i = 0; i < numCols; i++) // initialize column headers 
             {
-                headers[i] = new HeaderNode(i);
+                matrixHeaders[i] = new HeaderNode(i);
 
-                root.LinkRight(headers[i]); // connect between the moved root and the current header
-                root = headers[i]; // move the root to the next header
+                root.LinkRight(matrixHeaders[i]); // connect between the moved root and the current header
+                root = matrixHeaders[i]; // move the root to the next header
             }
             root = root.right.columnHeader; // set root back to it's original place
 
@@ -62,9 +73,9 @@ namespace SodukoSolver.DLX
                 for (int col = 0; col < numCols; col++) // go through each col of the constraints matrix
                 {
                     // only if the problem matrix has 1 in the current cell, then, create a node
-                    if (ProbMat[row, col] == 1)
+                    if (problamMatrix[row, col] == 1)
                     {
-                        currentHeader = headers[col]; // get the current node's header
+                        currentHeader = matrixHeaders[col]; // get the current node's header
 
                         insertedNode = new Node(currentHeader); // create a new node currentHeader as it's header
 
@@ -84,18 +95,12 @@ namespace SodukoSolver.DLX
             }
         }
 
-        public List<Node> GetSolution()
-        {
-            return solution;
-        }
+        public List<Node> GetSolution() { return solution; } // a function that return the solution list of nodes
 
         public bool Search(List<Node> solution) // searching  for a solution through the node mesh
         {
             if (root.right == root) // if there is no column left, then must have found the solution
-            {
-                ConvertToMatrix();
                 return true;
-            }
 
             Node minCol = GetMinCol();  // choose column deterministically -> according to the number of nodes in each column
 
@@ -109,11 +114,11 @@ namespace SodukoSolver.DLX
                     Cover(rightNode.columnHeader);
 
                 if (Search(GetSolution()))
-                    return true; // move to the level (recursively)
+                    return true; // move to the next level (recursively)
 
-                currentRow = solution[solution.Count - 1];
+                currentRow = solution[^1]; // currentRow updates -> tried route didn't work
 
-                // if solution in not possible, backtrack (uncover) and remove the selected row (set) from solution
+                // if solution in not possible, backtrack (uncover) and remove the selected row ("set") from solution
                 solution.RemoveAt(solution.Count - 1);
 
                 minCol = currentRow.columnHeader;
@@ -122,76 +127,80 @@ namespace SodukoSolver.DLX
                     Uncover(leftNode.columnHeader);
             }
 
+            // solution not found, restore minCol to spares matrix andd return false
             Uncover(minCol);
-            return false;
+            return false; 
         }
 
         Node GetMinCol() // traversing through column headers to the right and return the column that has the minimum node count
         {
-            HeaderNode tempNode = (HeaderNode)root.right;
+            HeaderNode tempHeader = (HeaderNode)root.right;
             HeaderNode saveHeader = null;
+            
             int nodeCounter = SIZE * SIZE * SIZE; // maximum number of nodes in a column
 
-            while (tempNode != root)
+            while (tempHeader != root) // traversing through each column header
             {
-                if (tempNode.headerNodeCount < nodeCounter)
+                if (tempHeader.headerNodeCount < nodeCounter) // if found a new min value of nodes in col -> setting it in saveHeader
                 {
-                    nodeCounter = tempNode.headerNodeCount;
-                    saveHeader = tempNode;
+                    nodeCounter = tempHeader.headerNodeCount;
+                    saveHeader = tempHeader;
                 }
-                tempNode = (HeaderNode)tempNode.right;
+                tempHeader = (HeaderNode)tempHeader.right;
             }
-            return saveHeader;
+            
+            return saveHeader; // returning the column header with the mininum amount of nodes under it
         }
 
-        public void ConvertToMatrix() // converting the solution list back into a matrix and printing the solved sudoku board
+        public void ConvertBackToMatrix() // converting the solution list back into a matrix and printing the solved sudoku board
         {
-            int[,] mat = new int[SIZE, SIZE];
+            int[,] solvedBoard = new int[SIZE, SIZE];
             
-            foreach (Node n in solution)
+            foreach (Node node in solution) // go over each node in the solution list 
             {
-                Node tempNode = n;
-                int min = tempNode.columnHeader.name;
+                int minName = node.columnHeader.name;
+                Node tempNode = node;
 
-                for (Node temp = tempNode.right; temp != tempNode; temp = temp.right)
+                for (Node temp = node.right; temp != node; temp = temp.right) // go left to right and search fo the minimal column Header
                 {
-                    int var = temp.columnHeader.name;
-                    if (var < min)
+                    int name = temp.columnHeader.name;
+                    if (name < minName)
                     {
-                        min = var;
+                        minName = name;
                         tempNode = temp;
                     }
                 }
-                int placement = tempNode.columnHeader.name;
-                int row = placement / SIZE;
-                int col = placement % SIZE;
+                int columnHeaderPos = tempNode.columnHeader.name;
+                int row = columnHeaderPos / SIZE;
+                int col = columnHeaderPos % SIZE;
                 
-                mat[row, col] = tempNode.right.columnHeader.name % SIZE + 1;
+                solvedBoard[row, col] = tempNode.right.columnHeader.name % SIZE + 1;
             }
 
+            // printing the board to the console at a matrix form
             Console.WriteLine("The Solution:");
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
-                    Console.Write(mat[i, j] + " ");
+                    Console.Write(solvedBoard[i, j] + " ");
                 Console.WriteLine("");
             }
         }
 
         private static void Cover(Node targetNode) // covering the given node completely -> unlinking it from the mesh
         {
-            //unlink node's right links 
+            //unlinking node's right links 
             targetNode.left.right = targetNode.right;
             targetNode.right.left = targetNode.left;
 
-            Node currentCol = targetNode.down;
+            Node currentHeader = targetNode.down;
             Node currentNode;
 
-            while (currentCol != targetNode)
+            while (currentHeader != targetNode) // traversing through the mesh and covering the links of the given node
             {
-                currentNode = currentCol.right;
+                currentNode = currentHeader.right;
 
-                while (currentNode != currentCol)
+                while (currentNode != currentHeader)
                 {
                     // unlink each of the up/down links of the nodes in the same column
                     currentNode.up.down = currentNode.down;
@@ -201,7 +210,7 @@ namespace SodukoSolver.DLX
 
                     currentNode = currentNode.right;
                 }
-                currentCol = currentCol.down;
+                currentHeader = currentHeader.down;
             }
         }
 
@@ -211,14 +220,14 @@ namespace SodukoSolver.DLX
             targetNode.left.right = targetNode;
             targetNode.right.left = targetNode;
 
-            Node currentCol = targetNode.up;
+            HeaderNode currentHeader = (HeaderNode)targetNode.up;
             Node currentNode;
 
-            while (currentCol != targetNode)
+            while (currentHeader != targetNode) // traversing through the mesh and uncovering the links of the given node
             {
-                currentNode = currentCol.left;
+                currentNode = currentHeader.left;
 
-                while (currentNode != currentCol)
+                while (currentNode != currentHeader)
                 {
                     // relink each of the up/down links of the nodes in the same column
                     currentNode.up.down = currentNode;
@@ -228,7 +237,7 @@ namespace SodukoSolver.DLX
 
                     currentNode = currentNode.left;
                 }
-                currentCol = currentCol.up;
+                currentHeader = (HeaderNode)currentHeader.up;
             }
         }
     }

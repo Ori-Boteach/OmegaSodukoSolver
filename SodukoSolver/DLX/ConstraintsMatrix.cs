@@ -2,42 +2,48 @@
 {
     public class ConstraintsMatrix
     { 
-        public static int[,] ConvertSudoku(int[,] matrix) // converting the given sudoku board to a big 0/1 matrix according to sudoku constraints
+        public static int[,] ConvertSudokuBoard(int[,] matrix) // converting the given sudoku board to a big 0/1 matrix according to sudoku constraints
         {
+            // setting global variables locally to shorten used names
             int SIZE = DancingLinksSolver.SIZE;
-            
-            int[,] newMatrix = new int[DancingLinksSolver.numRows, DancingLinksSolver.numCols];
+            int CUBE_SIZE = DancingLinksSolver.CUBE_SIZE;
 
-            int currentCellLocationCol = 0;
-            int currentCol = SIZE * SIZE * 2;
-            int currentCube = SIZE * SIZE * 3;
+            int[,] ConstraintsMatrix = new int[DancingLinksSolver.numRows, DancingLinksSolver.numCols]; // create a new matrix with the right size -> (n^3, 4n^2)
+
+            int currentCellCol = 0; // cell constraint -> from the 1st col of the constraints matrix
+            int currentCol = SIZE * SIZE * 2; // col constraint -> from the 3rd col of the constraints matrix
+            int currentCube = SIZE * SIZE * 3; // cube constraint -> from the 4th col of the constraints matrix
 
             int rowIndex = 0;
 
-            for (int rowI = 0; rowI < SIZE; rowI++)
+            for (int row = 0; row < SIZE; row++)
             {
-                int currentRow = SIZE * SIZE;
-                
-                for (int colI = 0; colI < SIZE; colI++)
+                int currentRow = SIZE * SIZE; // row constraint -> from the 2nd col of the constraints matrix
+
+                for (int col = 0; col < SIZE; col++)
                 {
-                    int value = matrix[rowI, colI];
-                    for (int possible = 1; possible <= SIZE; possible++)
+                    int value = matrix[row, col];
+                    
+                    for (int possibleValue = 1; possibleValue <= SIZE; possibleValue++)
                     {
-                        if (value == 0 || value == possible)
+                        if (value == 0 || value == possibleValue) // if the cell is empty or the cell's value is equal to the current possible value
                         {
-                            newMatrix[rowIndex, currentCellLocationCol] = 1;
-                            newMatrix[rowIndex, currentRow] = 1;
-                            newMatrix[rowIndex, currentCol + possible - 1] = 1;
-                            newMatrix[rowIndex, currentCube + SIZE * (rowI / DancingLinksSolver.CUBE_SIZE * DancingLinksSolver.CUBE_SIZE + colI / DancingLinksSolver.CUBE_SIZE) + possible - 1] = 1;
+                            // insert 1's for every constraint that the current cell satisfies
+                            ConstraintsMatrix[rowIndex, currentCellCol] = 1;
+                            ConstraintsMatrix[rowIndex, currentRow] = 1;
+                            ConstraintsMatrix[rowIndex, currentCol + possibleValue - 1] = 1;
+                            ConstraintsMatrix[rowIndex, currentCube + SIZE * (row / CUBE_SIZE * CUBE_SIZE + col / CUBE_SIZE) + possibleValue - 1] = 1;
                         }
+
+                        // increase the constraints indicators
                         rowIndex++;
                         currentRow++;
                     }
-                    currentCellLocationCol++;
+                    currentCellCol++;
                 }
                 currentCol += SIZE;
             }
-            return newMatrix;
+            return ConstraintsMatrix; // return the new constraints matrix
         }
     }
 }

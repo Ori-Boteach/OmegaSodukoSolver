@@ -69,7 +69,7 @@ namespace SodukoSolverTests
             StringWriter stringWriter = new();
             Console.SetOut(stringWriter);
             // Act
-            _ui.getInputAsFile();
+            _ui.GetInputAsFile();
             string actualOutput = stringWriter.ToString();
             // Assert
             Assert.AreEqual(expectedOutput, actualOutput);

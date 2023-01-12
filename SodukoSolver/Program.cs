@@ -26,18 +26,18 @@
                     switch (choise) // the different options the user get enter at the menu and their corresponding actions
                     {
                         case "1":
-                            ui.getInputAsString();
+                            ui.GetInputAsString();
                             break;
                             
                         case "2":
-                            ui.getInputAsFile();
+                            ui.GetInputAsFile();
                             break;
 
                         case null:
                             throw new NullInputException("");
 
                         case "q":
-                            ui.endMessage();
+                            ui.EndMessage();
                             Environment.Exit(0);
                             break;
 
@@ -46,25 +46,25 @@
                             continue;
                     }
                 }
-                catch (InvalidInputLengthException e)
+                catch (InvalidInputLengthException iile)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(iile.Message);
                 }
-                catch (InvalidInputCharException e)
+                catch (InvalidInputCharException iice)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(iice.Message);
                 }
-                catch (InvalidInputPlaceException e)
+                catch (InvalidInputPlaceException iipe)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(iipe.Message);
                 }
-                catch(ArgumentNullException e)
+                catch(ArgumentNullException ane)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(ane.Message);
                 }
-                catch (NullInputException e)
+                catch (NullInputException nie)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(nie.Message);
                     break;
                 }
 
@@ -75,7 +75,7 @@
                 if (answer == "q")
                     wantsAgain = false;
             }
-            ui.endMessage(); // calling the function to print the message at the end of the solver
+            ui.EndMessage(); // calling the function to print the message at the end of the solver
         }
     }
 }
