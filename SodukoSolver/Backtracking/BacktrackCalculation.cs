@@ -5,14 +5,47 @@ namespace SodukoSolver.Backtracking
 {
     class BacktrackCalculation
     {
+        public int countEmptyCells()
+        {
+            int countEmpty = 0;
+            for (int row = 0; row < UI.SIZE; row++)
+            {
+                for (int col = 0; col < UI.SIZE; col++)
+                {
+                    if (UI.initialSodukoMatrix[row, col] == 0)
+                        countEmpty++;
+                }
+            }
+            return countEmpty;
+        }
         public string InitiateBacktracking() // the function that handles all of the backtracking solvig operation
         {                
             // setting up the timer and starting it 
             var timer = new Stopwatch();
             timer.Start();
+
             
-            Optimize optimize = new();
-            optimize.HiddenDoubles(); // calling the HiddenDoubles method to optimize the soduko board
+            if (countEmptyCells() > 90*UI.SIZE* UI.SIZE / 100) // if the soduko is more than 90% empty,apply optimization techniques
+            {
+                Optimize optimize = new();
+                bool appliedOptimization; // a flag to track if an optimization technique was applied
+                
+                // keep applying optimization techniques until they can no longer be applied
+                do
+                {
+                    appliedOptimization = optimize.SimpleElimination();
+
+                    if (!appliedOptimization)
+                        appliedOptimization = optimize.HiddenSingle();
+
+                    if (!appliedOptimization)
+                        appliedOptimization = optimize.NakedPairs();
+                }
+                while (appliedOptimization);
+
+                optimize.HiddenDoubles(); // calling the HiddenDoubles method to optimize the soduko board
+            }
+            
 
             BacktrackCalculation calculation = new();
             bool answer = calculation.SolveSudoku(); // solving the sudoku using backtracking algorithm

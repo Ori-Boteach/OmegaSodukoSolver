@@ -435,12 +435,12 @@
         private static void RemoveValuesFromCube(int row, int col, HashSet<int> values)
         {
             // calculate the top left cell of the cube that contains the current cell
-            int cubeStartRow = row - row % (int)Math.Sqrt(UI.SIZE);
-            int cubeStartCol = col - col % (int)Math.Sqrt(UI.SIZE);
+            int cubeStartRow = row - row % UI.CUBE_SIZE;
+            int cubeStartCol = col - col % UI.CUBE_SIZE;
 
-            for (int i = 0; i < (int)Math.Sqrt(UI.SIZE); i++)
+            for (int i = 0; i < UI.CUBE_SIZE; i++)
             {
-                for (int j = 0; j < (int)Math.Sqrt(UI.SIZE); j++)
+                for (int j = 0; j < UI.CUBE_SIZE; j++)
                 {
                     Cell cell = UI.initialSodukoBoard[cubeStartRow + i, cubeStartCol + j];
 
