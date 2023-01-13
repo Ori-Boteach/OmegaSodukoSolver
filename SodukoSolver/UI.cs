@@ -23,7 +23,7 @@ namespace SodukoSolver
         // when the user enters a keyboard interrupt (Ctrl+C) this event will be called to display end message and end the program
         public void OnKeyboardInterruptEvent(object sender, ConsoleCancelEventArgs e)
         {
-            Console.WriteLine("\nKeyboard interrupt detected... Teminating, start over");
+            Console.WriteLine("\nKeyboard interrupt detected... Teminating, please start over");
             e.Cancel = true; // Set the Cancel property to true to prevent the process from being terminated
             Environment.Exit(0); // Terminate the program
         }
@@ -37,9 +37,7 @@ namespace SodukoSolver
             string filePath = Console.ReadLine();
             
             if (filePath == null) // Check if the input string is null
-            {
                 throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
-            }
 
             try
             {
@@ -76,9 +74,8 @@ namespace SodukoSolver
             string input = Console.ReadLine();
             
             if (input == null) // checking if the input string is null
-            {
                 throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
-            }
+
             ValidationAndStart(input);
         }
 
@@ -99,19 +96,22 @@ namespace SodukoSolver
             for (int inputIndex = 0; inputIndex < inputChars.Length; inputIndex++)
             {
                 if (inputChars[inputIndex] < '0' || inputChars[inputIndex] > (char)(SIZE + '0'))
-                    throw new InvalidInputCharException("Invalid char in index " + inputIndex + " of the inputted puzzle");
+                    throw new InvalidInputCharException("Invalid char -> '" + inputChars[inputIndex] + "', in index " + inputIndex + " of the inputted puzzle");
             }
 
             Console.WriteLine("\nVALID INPUT!");
+            // giving the user the option to choose between solving algorithms
             Console.WriteLine("\nWould you like to solve your sudoku using backtracking algorithm or dancing links algorihm?");
             Console.WriteLine("Type 'b' for backtracking or anyting else for dancing links");
             string choise = Console.ReadLine();
-            if (choise == "b")
+            if (choise == "b") // checking what the user chose
                 choseDLX = false;
             else
                 choseDLX = true;
 
-            // timing the solution process -> starting stopwatch, solving and printing solution time
+            Console.ForegroundColor = ConsoleColor.Yellow; // changing console to yellow
+            PrintBoard(input); // printing the input at a board format
+            Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
             Console.WriteLine("\nGOT IT! processing...");
             
             string result = CallByOrder(input);
@@ -158,6 +158,10 @@ namespace SodukoSolver
                 Console.WriteLine("\n(your solved soduko is also in C:\\Users\\user\\Downloads\\sudoku_result.txt)");
             }
 
+            Console.ForegroundColor = ConsoleColor.Green; // changing console to green
+            PrintBoard(result); // printing the solution at a board format
+            Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
+
             return result;
         }
 
@@ -178,13 +182,13 @@ namespace SodukoSolver
 
         public static void UpdatePossibleValuesForEmpty() // updating the possible values for the empty cells in the board
         {
-            for (int row = 0; row < SIZE; row++)
+            for (int row = 0; row < SIZE; row++) // for each row
             {
-                for (int col = 0; col < SIZE; col++)
+                for (int col = 0; col < SIZE; col++) // for each col
                 {
-                    if (initialSodukoBoard[row, col].Value == 0)
+                    if (initialSodukoBoard[row, col].Value == 0) // if cell is empty
                     {
-                        for (int value = 1; value <= SIZE; value++)
+                        for (int value = 1; value <= SIZE; value++) // check every possible value with CanBePlaced and remove the invalid ones
                         {
                             if (BacktrackCalculation.CanBePlaced(row, col, value) == false)
                                 initialSodukoBoard[row, col].PossibleValues.Remove(value);
@@ -192,6 +196,55 @@ namespace SodukoSolver
                     }
                 }
             }
+        }
+        public static void PrintBoard(string solved) // printing the board to the console
+        {
+            if (solved == "***The soduko is unsolvable***") // if there is no solution, retrun immediately
+                return;
+
+            // converting string solution to matrix solution
+            int index = 0;
+            int[,] solvedMatrix = new int[SIZE, SIZE];
+            for (int row = 0; row < SIZE; row++)
+            {
+                for (int col = 0; col < SIZE; col++)
+                {
+                    solvedMatrix[row, col] = solved[index] - '0'; // converting chars from their ascii codes to actual int values
+                    index++;
+                }
+            }
+
+            // printing the solved matrix to the console:
+            Console.Write("\n╔");
+            for (int i = 0; i < SIZE * 3 + CUBE_SIZE + (CUBE_SIZE - 1); i++)
+                Console.Write("═");
+            Console.Write("╗\n");
+
+            for (int row = 0; row < SIZE; row++) // loop through the values
+            {
+                Console.Write("║ ");
+
+                for (int col = 0; col < SIZE; col++)
+                {
+                    Console.Write(solvedMatrix[row, col].ToString().PadLeft(2) + " "); // each value gets extra space for boards with bigger values
+
+                    if ((col + 1) % CUBE_SIZE == 0 && col != SIZE - 1)
+                        Console.Write("║ ");
+                }
+                Console.Write("║\n");
+
+                if ((row + 1) % CUBE_SIZE == 0 && row != SIZE - 1)
+                {
+                    Console.Write("╠");
+                    for (int i = 0; i < SIZE * 3 + CUBE_SIZE + (CUBE_SIZE - 1); i++)
+                        Console.Write("═");
+                    Console.Write("╣\n");
+                }
+            }
+            Console.Write("╚");
+            for (int i = 0; i < SIZE * 3 + CUBE_SIZE + (CUBE_SIZE - 1); i++)
+                Console.Write("═");
+            Console.Write("╝");
         }
 
         public void EndMessage() // printing to the screen the the end message
