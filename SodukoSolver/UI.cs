@@ -102,6 +102,7 @@ namespace SodukoSolver
             Console.WriteLine("\nVALID INPUT!");
             // giving the user the option to choose between solving algorithms
             Console.WriteLine("\nWould you like to solve your sudoku using backtracking algorithm or dancing links algorihm?");
+            Console.WriteLine("(please note that backtracking algorithm only works for sudokus with sizes of 16 by 16 or smaller)");
             Console.WriteLine("Type 'b' for backtracking or anyting else for dancing links");
             string choise = Console.ReadLine();
             if (choise == "b") // checking what the user chose
@@ -141,15 +142,19 @@ namespace SodukoSolver
             }
 
             string result;
-            if (choseDLX) // the user chose to solve his sudoku using dlx algorithm
-            {
-                InitiatingDlxClass callDLX = new();
-                result = callDLX.InitiateDLX(initialSodukoMatrix); // returning string result for AAA testing on ValidationAndStart method
-            }
-            else // the user chose to solve his sudoku using backtracking algorithm
+            if ((!choseDLX)&&(SIZE<25)) // the user chose to solve his sudoku using backtracking algorithm and the size is vaible
             {
                 BacktrackCalculation callBacktrack = new();
                 result = callBacktrack.InitiateBacktracking(); // returning string result for AAA testing on ValidationAndStart method
+                
+            }
+            else // the user chose to solve his sudoku using dlx algorithm
+            {
+                if (!choseDLX) // if chose backtracking but size is too big, print message and proceed
+                    Console.WriteLine("\n--mast solve this sudoku using dlx--");
+
+                InitiatingDlxClass callDLX = new();
+                result = callDLX.InitiateDLX(initialSodukoMatrix); // returning string result for AAA testing on ValidationAndStart method
             }
             
             if (isFromFile) // if given sudoku came from a file -> writing it's solution to a sudoku_result text file in addition to printing it to the console 
@@ -168,9 +173,9 @@ namespace SodukoSolver
         public static void ConvertToBoardAndSolve(string validInput) // converting the puzzle string to a 2D array
         {
             int index = 0;
-            for (int row = 0; row < SIZE; row++)
+            for (int row = 0; row < SIZE; row++) // for each row
             {
-                for (int col = 0; col < SIZE; col++)
+                for (int col = 0; col < SIZE; col++) // for each col
                 {
                     initialSodukoBoard[row, col] = new Cell(validInput[index] - '0'); // creating cells and converting chars from their ascii codes to actual int values
                     initialSodukoMatrix[row, col] = validInput[index] - '0';
