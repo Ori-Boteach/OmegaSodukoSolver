@@ -5,10 +5,11 @@
         public static int[,] ConvertSudokuBoard(int[,] matrix) // converting the given sudoku board to a big 0/1 matrix according to sudoku constraints
         {
             // setting global variables locally to shorten used names
-            int SIZE = DancingLinksSolver.SIZE;
-            int CUBE_SIZE = DancingLinksSolver.CUBE_SIZE;
-
-            int[,] ConstraintsMatrix = new int[DancingLinksSolver.numRows, DancingLinksSolver.numCols]; // create a new matrix with the right size -> (n^3, 4n^2)
+            int SIZE = UI.SIZE;
+            int CUBE_SIZE = UI.CUBE_SIZE;
+            DancingLinksSolver dancingLinksSolver = new();
+            
+            int[,] ConstraintsMatrix = new int[dancingLinksSolver.numRows, dancingLinksSolver.numCols]; // create a new matrix with the right size -> (n^3, 4n^2)
 
             int currentCellCol = 0; // cell constraint -> from the 1st col of the constraints matrix
             int currentCol = SIZE * SIZE * 2; // col constraint -> from the 3rd col of the constraints matrix

@@ -111,9 +111,9 @@ namespace SodukoSolver.Backtracking
         {
             if (!answer) // if the returned value from SolveSudoku is flase -> soduko is UNSOLVABLE
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                 Console.WriteLine("\n***The soduko is unsolvable***");
-                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                 return "***The soduko is unsolvable***";
             }
             else
@@ -127,9 +127,9 @@ namespace SodukoSolver.Backtracking
         public static string PrintBoard()
         {
             string solvedSodukoString = ConvertBackToString();
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Green; // changing console to green
             Console.WriteLine(solvedSodukoString);
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
             return solvedSodukoString;
         }
 

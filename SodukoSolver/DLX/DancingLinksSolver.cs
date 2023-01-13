@@ -9,11 +9,8 @@ namespace SodukoSolver.DLX
 
     public class InitiatingDlxClass
     {
-        public static int given_SIZE; // the sudoku's size
-
         public string InitiateDLX(int[,] board) // the function that handles all of the dlx solvig operation
         {
-            given_SIZE = board.GetLength(0); // set the sudoku's size as a globl variable
             int[,] ConstraintsMatrix = DLX.ConstraintsMatrix.ConvertSudokuBoard(board); // convert given sudoku board to big 0/1 matrix according to sudoku constraints
 
             // create a new instance of the DancingLinksSolver class and convert to correlating node spares matrix
@@ -25,12 +22,12 @@ namespace SodukoSolver.DLX
             timer.Start();
 
             string answer;
-            if (given_SIZE == 1) // if given sudoku is 1 by 1 -> skip search, solution must be 1
+            if (UI.SIZE == 1) // if given sudoku is 1 by 1 -> skip search, solution must be 1
             {
                 Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Green; // changing console to green
                 Console.WriteLine("1");
-                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                 answer = "1";
             }
             else
@@ -38,10 +35,10 @@ namespace SodukoSolver.DLX
                 bool result = dLX.Search(dLX.GetSolution()); // call the Search method for a solution
                 if (!result)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                     Console.WriteLine("\n***The soduko is unsolvable***");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    answer = "***The soduko is unsolvable***";
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
+                    answer = "***The soduko is unsolvable***"; 
                 }
                 else
                     answer = dLX.ConvertBackToMatrix();
@@ -59,10 +56,10 @@ namespace SodukoSolver.DLX
     public class DancingLinksSolver // DancingLinksSolver class that converts constraints matrix to node spares matrix and performs the claculations
     {
         // setting global size variables
-        public static readonly int SIZE = InitiatingDlxClass.given_SIZE;
-        public static readonly int CUBE_SIZE = (int)Math.Sqrt(SIZE);
-        public static readonly int numRows = SIZE * SIZE * SIZE;
-        public static readonly int numCols = 4 * SIZE * SIZE;
+        public int SIZE = UI.SIZE;
+        public int CUBE_SIZE = (int)Math.Sqrt(UI.SIZE);
+        public int numRows = UI.SIZE * UI.SIZE * UI.SIZE;
+        public int numCols = 4 * UI.SIZE * UI.SIZE;
 
         private HeaderNode root; // root access to the nodes mesh
 
@@ -254,7 +251,7 @@ namespace SodukoSolver.DLX
             targetNode.left.right = targetNode;
             targetNode.right.left = targetNode;
 
-            HeaderNode currentHeader = (HeaderNode)targetNode.up;
+            Node currentHeader = targetNode.up;
             Node currentNode;
 
             while (currentHeader != targetNode) // traversing through the mesh and uncovering the links of the given node
@@ -271,7 +268,7 @@ namespace SodukoSolver.DLX
 
                     currentNode = currentNode.left;
                 }
-                currentHeader = (HeaderNode)currentHeader.up;
+                currentHeader = currentHeader.up;
             }
         }
     }

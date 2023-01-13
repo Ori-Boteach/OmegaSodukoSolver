@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using SodukoSolver.Backtracking;
+﻿using SodukoSolver.Backtracking;
 using SodukoSolver.DLX;
 
 #pragma warning disable CS8618 // disable warning -> Non-nullable field must contain a non-null value
@@ -14,7 +13,7 @@ namespace SodukoSolver
         public static int SIZE;
         public static int CUBE_SIZE;
 
-        public static bool isFromFile = false;
+        public static bool isFromFile = false; // defualt choise is false
         public static bool choseDLX = true; // defualt choise is true
 
         public static Cell[,] initialSodukoBoard;
@@ -54,7 +53,7 @@ namespace SodukoSolver
                 isFromFile = true; // setting the isFromFile variable to true to indicate that the input is from a file
 
                 Console.WriteLine("\nSOLVING THIS SUDOKU:\n"+input);
-                ValidationAndStart(input);
+                GetChoise(input);
             }
             catch (FileNotFoundException)
             {
@@ -76,6 +75,21 @@ namespace SodukoSolver
             if (input == null) // checking if the input string is null
                 throw new NullInputException("*solver terminated due to null input -> keyboard interrupt detected*");
 
+            GetChoise(input);
+        }
+
+        public void GetChoise(string input)
+        {
+            // giving the user the option to choose between solving algorithms
+            Console.WriteLine("\nWould you like to solve your sudoku using backtracking algorithm or dancing links algorihm?");
+            Console.WriteLine("(please note that backtracking algorithm only works for sudokus with sizes of 16 by 16 or smaller)");
+            Console.WriteLine("Type 'b' for backtracking or anyting else for dancing links");
+            string choise = Console.ReadLine();
+            if (choise == "b") // checking what the user chose
+                choseDLX = false;
+            else
+                choseDLX = true;
+
             ValidationAndStart(input);
         }
 
@@ -84,7 +98,7 @@ namespace SodukoSolver
             List<int> possibleSizes = new() { 1, 4, 9, 16, 25}; // a list that holds all possible soduko sizes
 
             SIZE = (int)Math.Sqrt(input.Length);
-            CUBE_SIZE = (int)Math.Sqrt(UI.SIZE);
+            CUBE_SIZE = (int)Math.Sqrt(SIZE);
             initialSodukoBoard = new Cell[SIZE, SIZE];
             initialSodukoMatrix = new int[SIZE, SIZE];
 
@@ -98,18 +112,7 @@ namespace SodukoSolver
                 if (inputChars[inputIndex] < '0' || inputChars[inputIndex] > (char)(SIZE + '0'))
                     throw new InvalidInputCharException("Invalid char -> '" + inputChars[inputIndex] + "', in index " + inputIndex + " of the inputted puzzle");
             }
-
-            Console.WriteLine("\nVALID INPUT!");
-            // giving the user the option to choose between solving algorithms
-            Console.WriteLine("\nWould you like to solve your sudoku using backtracking algorithm or dancing links algorihm?");
-            Console.WriteLine("(please note that backtracking algorithm only works for sudokus with sizes of 16 by 16 or smaller)");
-            Console.WriteLine("Type 'b' for backtracking or anyting else for dancing links");
-            string choise = Console.ReadLine();
-            if (choise == "b") // checking what the user chose
-                choseDLX = false;
-            else
-                choseDLX = true;
-
+            
             Console.ForegroundColor = ConsoleColor.Yellow; // changing console to yellow
             PrintBoard(input); // printing the input at a board format
             Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
@@ -142,7 +145,7 @@ namespace SodukoSolver
             }
 
             string result;
-            if ((!choseDLX)&&(SIZE<25)) // the user chose to solve his sudoku using backtracking algorithm and the size is vaible
+            if ((!choseDLX)&&(SIZE<25)) // the user chose to solve his sudoku using backtracking algorithm and the size is valid
             {
                 BacktrackCalculation callBacktrack = new();
                 result = callBacktrack.InitiateBacktracking(); // returning string result for AAA testing on ValidationAndStart method
