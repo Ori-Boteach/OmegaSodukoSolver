@@ -24,62 +24,53 @@ namespace SodukoSolver.Backtracking
 
             return SodukoResult(answer); // calling the function that prints the solved string
         }
-        
+
         public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
         {
-            Optimize optimize = new();
-            bool appliedOptimization; // a flag to track if an optimization technique was applied
+            // initializing variables to store the position of the last empty cell
+            int row = UI.SIZE - 1;
+            int col = UI.SIZE - 1;
+            bool isEmpty = true;
 
-            // keep applying optimization techniques until they can no longer be applied
-            do
+            // searching for the last empty cell
+            for (int i = UI.SIZE - 1; i >= 0; i--)
             {
-                appliedOptimization = optimize.SimpleElimination(); // calling the SimpleElimination method to optimize the soduko board
-
-                if (!appliedOptimization)
-                    appliedOptimization = optimize.HiddenSingle(); // calling the HiddenSingle method to optimize the soduko board
-
-                if (!appliedOptimization)
-                    appliedOptimization = optimize.NakedPairs(); // calling the NakedPairs method to optimize the soduko board
-            }
-            while (appliedOptimization);
-
-            // initialize variables to store the position of the cell with minimum possible values
-            int row = 0;
-            int col = 0;
-            int minPossibles = UI.SIZE + 1; // setting the initial value of minPossibles to be SIZE+1
-
-            // update the position of the cell with the minimum number of possible values if necessary
-            for (int i = 0; i < UI.SIZE; i++)
-            {
-                for (int j = 0; j < UI.SIZE; j++)
+                for (int j = UI.SIZE - 1; j >= 0; j--)
                 {
-                    if (UI.initialSodukoBoard[i, j].Value == 0 && UI.initialSodukoBoard[i, j].PossibleValues.Count < minPossibles)
+                    if (UI.initialSodukoBoard[i, j].Value == 0) // if found empty cell -> storing it's information
                     {
                         row = i;
                         col = j;
-                        minPossibles = UI.initialSodukoBoard[i, j].PossibleValues.Count;
+                        isEmpty = false;
+                        break;
                     }
                 }
+                if (!isEmpty) // if found empty cell -> breaking from the loop
+                    break;
             }
 
-            // if all cells are filled, then the puzzle is already solved
-            if (minPossibles == UI.SIZE + 1)
+            if (isEmpty) // if no empty cells are found, the puzzle is already solved
                 return true;
 
-            // trying filling the cell with the minimum possible values, with values from 1 to the soduko's SIZE
-            foreach (int num in UI.initialSodukoBoard[row, col].PossibleValues)
+            // trying to fill the empty cell with a number from 1 to soduko's SIZE
+            int possibleValues = 0;
+            foreach (int value in UI.initialSodukoBoard[row, col].PossibleValues)
             {
-                if (CanBePlaced(row, col, num)) // checking if the current value can be places if this cell
+                possibleValues |= (1 << (value - 1));
+            }
+
+            for (int num = 1; num <= UI.SIZE; num++)
+            {
+                if ((possibleValues & (1 << (num - 1))) != 0 && CanBePlaced(row, col, num)) // checking if the current value can be placed if this cell
                 {
                     UI.initialSodukoBoard[row, col].Value = num; // placing the correct number in the empty cell
 
                     if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
                         return true;
-
-                    UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
+                    else
+                        UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
                 }
             }
-
             return false;
         }
 
