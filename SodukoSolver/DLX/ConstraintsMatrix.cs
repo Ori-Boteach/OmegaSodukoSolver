@@ -7,9 +7,10 @@
             // setting global variables locally to shorten used names
             int SIZE = UI.SIZE;
             int CUBE_SIZE = UI.CUBE_SIZE;
-            DancingLinksSolver dancingLinksSolver = new();
-            
-            int[,] ConstraintsMatrix = new int[dancingLinksSolver.numRows, dancingLinksSolver.numCols]; // create a new matrix with the right size -> (n^3, 4n^2)
+
+            DancingLinksSolver dancingLinksSolver = new(); // creating an instance of the DancingLinksSolver class
+
+            int[,] ConstraintsMatrix = new int[dancingLinksSolver.numRows, dancingLinksSolver.numCols]; // creating a new matrix with the right size -> (n^3, 4n^2)
 
             int currentCellCol = 0; // cell constraint -> from the 1st col of the constraints matrix
             int currentCol = SIZE * SIZE * 2; // col constraint -> from the 3rd col of the constraints matrix
@@ -17,11 +18,12 @@
 
             int rowIndex = 0;
 
-            for (int row = 0; row < SIZE; row++)
+            
+            for (int row = 0; row < SIZE; row++) // this loop iterates through each row of the input matrix 
             {
                 int currentRow = SIZE * SIZE; // row constraint -> from the 2nd col of the constraints matrix
 
-                for (int col = 0; col < SIZE; col++)
+                for (int col = 0; col < SIZE; col++) // this loop iterates through each column of the input matrix 
                 {
                     int value = matrix[row, col];
                     
