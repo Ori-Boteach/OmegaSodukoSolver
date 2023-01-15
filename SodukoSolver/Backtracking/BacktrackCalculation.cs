@@ -53,7 +53,7 @@ namespace SodukoSolver.Backtracking
             // stopping the timer and printing the answer
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("\nTime taken for BACKTRACKING solve: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
+            Console.WriteLine("\n\nTime taken for BACKTRACKING solve: " + timeTaken.TotalMilliseconds + " milliseconds");
 
             return SodukoResult(answer); // calling the function that prints the solved string
         }

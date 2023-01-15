@@ -36,8 +36,8 @@ namespace SodukoSolver.DLX
             // stopping the timer and printing the answer
             timer.Stop();
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("\n\nTime taken for DLX solve: " + timeTaken.ToString(@"m\:ss\.fff") + " minutes");
-
+            Console.WriteLine("\n\nTime taken for DLX solve: " + timeTaken.TotalMilliseconds + " milliseconds");
+            
             return answer; // return the answer to the calling function
         }
     }
