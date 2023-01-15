@@ -105,7 +105,7 @@ namespace SodukoSolver
             if (!possibleSizes.Contains(SIZE)) // if user input's length is invalid -> custom exception raised
                 throw new InvalidInputLengthException("Invalid number of chars in inputted string: " + input.Length);
 
-            // if char in user input isn't a valid digit -> custom exception raised
+            // if char in user input isn't a valid digit (a valid digit needs to be between '0' and the char with the ascii code of SIZE) -> custom exception raised
             char[] inputChars = input.ToCharArray();
             for (int inputIndex = 0; inputIndex < inputChars.Length; inputIndex++)
             {
