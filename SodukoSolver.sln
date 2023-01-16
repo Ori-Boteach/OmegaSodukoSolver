@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SodukoSolver", "SodukoSolver\SodukoSolver.csproj", "{3C359425-D156-4F14-A555-170524DA327E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SodukoSolver", "SodukoSolver\SodukoSolver.csproj", "{3C359425-D156-4F14-A555-170524DA327E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SodukoSolverTests", "SodukoSolverTests\SodukoSolverTests.csproj", "{78F7EB8F-0D7D-46FC-9EF3-7C40EAA75FF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{3C359425-D156-4F14-A555-170524DA327E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C359425-D156-4F14-A555-170524DA327E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C359425-D156-4F14-A555-170524DA327E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F7EB8F-0D7D-46FC-9EF3-7C40EAA75FF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F7EB8F-0D7D-46FC-9EF3-7C40EAA75FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F7EB8F-0D7D-46FC-9EF3-7C40EAA75FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F7EB8F-0D7D-46FC-9EF3-7C40EAA75FF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
