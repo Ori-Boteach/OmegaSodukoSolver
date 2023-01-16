@@ -5,49 +5,54 @@ namespace SodukoSolver.Backtracking
 {
     class BacktrackCalculation
     {
-        public int countEmptyCells()
+        // counting the number of empty cells in the sudoku
+        public static int CountEmptyCells()
         {
-            int countEmpty = 0;
+            int countEmpty = 0; // initializing the counter to 0
+
             for (int row = 0; row < UI.SIZE; row++)
             {
                 for (int col = 0; col < UI.SIZE; col++)
                 {
+                    // if the cell is empty, increase counter
                     if (UI.initialSodukoMatrix[row, col] == 0)
                         countEmpty++;
                 }
             }
             return countEmpty;
         }
-        public string InitiateBacktracking() // the function that handles all of the backtracking solvig operation
+        
+        // the function that handles all of the backtracking solvig operation
+        public string InitiateBacktracking() 
         {                
             // setting up the timer and starting it 
             var timer = new Stopwatch();
             timer.Start();
 
-            
-            if (countEmptyCells() > 90*UI.SIZE* UI.SIZE / 100) // if the soduko is more than 90% empty,apply optimization techniques
+
+            // if the soduko is more than 90% empty,apply optimization techniques
+            if (CountEmptyCells() > 90*UI.SIZE* UI.SIZE / 100) 
             {
-                Optimize optimize = new();
                 bool appliedOptimization; // a flag to track if an optimization technique was applied
                 
                 // keep applying optimization techniques until they can no longer be applied
                 do
                 {
-                    appliedOptimization = optimize.SimpleElimination();
+                    appliedOptimization = Optimize.SimpleElimination(); // applying simple elimination algorithm
 
                     if (!appliedOptimization)
-                        appliedOptimization = optimize.HiddenSingle();
+                        appliedOptimization = Optimize.HiddenSingle(); // applying hidden single algorithm
 
                     if (!appliedOptimization)
-                        appliedOptimization = optimize.NakedPairs();
+                        appliedOptimization = Optimize.NakedPairs(); // applying naked pairs algorithm
                 }
                 while (appliedOptimization);
 
-                optimize.HiddenDoubles(); // calling the HiddenDoubles method to optimize the soduko board
+                Optimize.HiddenDoubles(); // calling the HiddenDoubles method to optimize the soduko board even farther if possible
             }
-            
 
-            BacktrackCalculation calculation = new();
+
+            BacktrackCalculation calculation = new(); // creating an instance of the BacktrackCalculation class
             bool answer = calculation.SolveSudoku(); // solving the sudoku using backtracking algorithm
                                                     
             // stopping the timer and printing the answer
@@ -58,11 +63,13 @@ namespace SodukoSolver.Backtracking
             return SodukoResult(answer); // calling the function that prints the solved string
         }
 
-        public bool SolveSudoku() // solving the soduko by the backtracing algorithm -> recursively calling itself
+        // solving the soduko by the backtracing algorithm -> recursively calling itself
+        public bool SolveSudoku() 
         {
             // initializing variables to store the position of the last empty cell
             int row = UI.SIZE - 1;
             int col = UI.SIZE - 1;
+            
             bool isEmpty = true;
 
             // searching for the last empty cell
@@ -70,7 +77,8 @@ namespace SodukoSolver.Backtracking
             {
                 for (int j = UI.SIZE - 1; j >= 0; j--)
                 {
-                    if (UI.initialSodukoBoard[i, j].Value == 0) // if found empty cell -> storing it's information
+                    // if found empty cell -> storing it's information, changing the flag and breaking
+                    if (UI.initialSodukoBoard[i, j].Value == 0)
                     {
                         row = i;
                         col = j;
@@ -78,7 +86,7 @@ namespace SodukoSolver.Backtracking
                         break;
                     }
                 }
-                if (!isEmpty) // if found empty cell -> breaking from the loop
+                if (!isEmpty) // if found empty cell -> also breaking from the outer loop
                     break;
             }
 
@@ -88,17 +96,18 @@ namespace SodukoSolver.Backtracking
             // trying to fill the empty cell with a number from 1 to soduko's SIZE
             int possibleValues = 0;
             foreach (int value in UI.initialSodukoBoard[row, col].PossibleValues)
-            {
-                possibleValues |= (1 << (value - 1));
-            }
+                possibleValues |= (1 << (value - 1)); // -> using bitwise operations OR and SHIFT LEFT for a faster operation
 
-            for (int num = 1; num <= UI.SIZE; num++)
+            for (int num = 1; num <= UI.SIZE; num++) // checking for every number between 1 and SIZE
             {
-                if ((possibleValues & (1 << (num - 1))) != 0 && CanBePlaced(row, col, num)) // checking if the current value can be placed if this cell
+                // checking if the current value can be placed if this cell:
+                // again, using bitwise operations AND and SHIFT LEFT for a faster operation 
+                if ((possibleValues & (1 << (num - 1))) != 0 && CanBePlaced(row, col, num)) 
                 {
                     UI.initialSodukoBoard[row, col].Value = num; // placing the correct number in the empty cell
 
-                    if (SolveSudoku()) // the function is recursively calling itself now that this position is solved
+                    // the function is recursively calling itself now that this position is solved
+                    if (SolveSudoku())
                         return true;
                     else
                         UI.initialSodukoBoard[row, col].Value = 0; // can't position a number in there yet (0 == empty cell)
@@ -125,14 +134,15 @@ namespace SodukoSolver.Backtracking
             }
 
             // checking num's cube for an already exsiting identical
-            int startRow = row - row % (UI.SIZE / UI.CUBE_SIZE);
-            int startCol = col - col % (UI.SIZE / UI.CUBE_SIZE);
+            int startRow = row - row % (UI.SIZE / UI.CUBE_SIZE); // finding the starting row of the cube
+            int startCol = col - col % (UI.SIZE / UI.CUBE_SIZE); // finding the starting column of the cube
 
             for (int i = startRow; i < startRow + UI.SIZE / UI.CUBE_SIZE; i++)
             {
                 for (int j = startCol; j < startCol + UI.SIZE / UI.CUBE_SIZE; j++)
                 {
-                    if (UI.initialSodukoBoard[i, j].Value == num)
+                    // if found identical in the same cube -> returning false
+                    if (UI.initialSodukoBoard[i, j].Value == num) 
                         return false;
                 }
             }
@@ -146,24 +156,24 @@ namespace SodukoSolver.Backtracking
             {
                 Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                 Console.WriteLine("\n***The soduko is unsolvable***");
-                Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
-                return "***The soduko is unsolvable***";
+                Console.ResetColor(); // reset console color to default (gray)
+                return "***The soduko is unsolvable***"; // also returning the string for later tests
             }
             else
             {
                 Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
-                return PrintBoard();
+                return PrintBoardAsString();
             }
         }
 
         // printing the solution of the given Soduko puzzle at a string format
-        public static string PrintBoard()
+        public static string PrintBoardAsString()
         {
             string solvedSodukoString = ConvertBackToString();
             Console.ForegroundColor = ConsoleColor.Green; // changing console to green
             Console.WriteLine(solvedSodukoString);
-            Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
-            return solvedSodukoString;
+            Console.ResetColor(); // reset console color to default (gray)
+            return solvedSodukoString; // retruning the converted string to calling method
         }
 
         public static string ConvertBackToString() // converting a soduko represented as a 2D array to string representation
@@ -174,9 +184,8 @@ namespace SodukoSolver.Backtracking
             for (int row = 0; row < UI.SIZE; row++)
             {
                 for (int col = 0; col < UI.SIZE; col++)
-                {
-                    solvedSodukoString.Append((char)(UI.initialSodukoBoard[row, col].Value + '0')); // converting back the values to their assigned chars
-                }
+                    // converting back the values to their assigned chars
+                    solvedSodukoString.Append((char)(UI.initialSodukoBoard[row, col].Value + '0'));
             }
 
             // returning the soduko string

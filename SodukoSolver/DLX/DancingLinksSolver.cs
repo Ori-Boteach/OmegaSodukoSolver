@@ -9,10 +9,12 @@ namespace SodukoSolver.DLX
 
     public class InitiatingDlxClass
     {
-        public string InitiateDLX(int[,] board) // the function that handles all of the dlx solvig operation
+        // the function that handles all of the dlx solvig operation
+        public string InitiateDLX(int[,] board) 
         {
-            int[,] ConstraintsMatrix = DLX.ConstraintsMatrix.ConvertSudokuBoard(board); // convert given sudoku board to big 0/1 matrix according to sudoku constraints
-
+            // convert given sudoku board to big 0/1 matrix according to sudoku constraints
+            int[,] ConstraintsMatrix = DLX.ConstraintsMatrix.ConvertSudokuBoard(board);
+            
             // create a new instance of the DancingLinksSolver class and convert the constraints matrix to correlating node spares matrix
             DancingLinksSolver dLX = new();
             dLX.CreateDancingLinksMatrix(ConstraintsMatrix);
@@ -27,7 +29,7 @@ namespace SodukoSolver.DLX
             {
                 Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                 Console.WriteLine("\n***The soduko is unsolvable***"); // printing an indicative message to the screen
-                Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
+                Console.ResetColor(); // reset console color to default (gray)
                 answer = "***The soduko is unsolvable***"; // also returning the message to the calling function for testings
             }
             else
@@ -41,8 +43,9 @@ namespace SodukoSolver.DLX
             return answer; // return the answer to the calling function
         }
     }
-    
-    public class DancingLinksSolver // DancingLinksSolver class that converts constraints matrix to node spares matrix and performs the claculations
+
+    // DancingLinksSolver class that converts constraints matrix to node spares matrix and performs the claculations
+    public class DancingLinksSolver 
     {
         // setting global size variables (all depend on the size of the soduko board which was calculated earlier)
         public int SIZE = UI.SIZE; // the size of the soduko board
@@ -101,15 +104,17 @@ namespace SodukoSolver.DLX
                 }
             }
         }
-
-        public List<Node> GetSolution() { return solution; } // a function that returns the solution list of nodes
+        
+        // a function that returns the solution list of nodes
+        public List<Node> GetSolution() { return solution; }
 
         public bool Search(List<Node> solution) // searching for a solution through the created node mesh
         {
             if (root.right == root) // if there is no column left, then I must have found the solution
                 return true;
 
-            Node minCol = GetMinCol();  // choosing column deterministically -> according to the number of nodes in each column (the column with the least nodes is chosen)
+            // choosing column deterministically -> according to the number of nodes in each column (the column with the least nodes is chosen)
+            Node minCol = GetMinCol();
 
             Cover(minCol); // cover chosen column -> remove it from the mesh
 
@@ -141,7 +146,8 @@ namespace SodukoSolver.DLX
             return false; 
         }
 
-        Node GetMinCol() // traversing through column headers to the right and returning the column that has the minimum node count
+        // traversing through column headers to the right and returning the column that has the minimum node count
+        Node GetMinCol() 
         {
             HeaderNode tempHeader = (HeaderNode)root.right; // start from the first header (to the right of the root)
             HeaderNode saveHeader = tempHeader; // save the first header as the one with the minimum node count
@@ -150,7 +156,8 @@ namespace SodukoSolver.DLX
 
             while (tempHeader != root) // traverse through each column header
             {
-                if (tempHeader.headerNodeCount < nodeCounter) // if found a new minimum value of nodes in col -> setting it in saveHeader and updating nodeCounter
+                // if found a new minimum value of nodes in col -> setting it in saveHeader and updating nodeCounter
+                if (tempHeader.headerNodeCount < nodeCounter)
                 {
                     nodeCounter = tempHeader.headerNodeCount;
                     saveHeader = tempHeader;
@@ -161,59 +168,8 @@ namespace SodukoSolver.DLX
             return saveHeader; // returning the column header with the mininum amount of nodes under it
         }
 
-        public string ConvertBackToMatrix() // converting the solution list back into a matrix and printing the solved sudoku board
-        {
-            int[,] solvedBoard = new int[SIZE, SIZE]; // initializing the solved board matrix to be the size of the given board
-
-            foreach (Node node in solution) // go over each node in the solution list 
-            {
-                int minName = node.columnHeader.name; // get the name of the current node's header
-                Node tempNode = node; // set a temp node to be the current node
-
-                for (Node temp = node.right; temp != node; temp = temp.right) // go left to right and search fo the minimal column Header
-                {
-                    int name = temp.columnHeader.name;
-                    if (name < minName) // if a new minimal was found, updating
-                    {
-                        minName = name;
-                        tempNode = temp;
-                    }
-                }
-
-                int columnHeaderPos = tempNode.columnHeader.name; // the position of the column header in the constraints matrix is the name of tempNode's column header
-                int row = columnHeaderPos / SIZE; // the row of the current node in the constraints matrix is the column header's position divided by the size of the board
-                int col = columnHeaderPos % SIZE; // the column of the current node in the constraints matrix is the column header's position modulo the size of the board
-
-                // the value of the current cell in the board is the name of the node to the right of the current node modulo the size of the board
-                solvedBoard[row, col] = tempNode.right.columnHeader.name % SIZE + 1;
-            }
-
-            // creating a string builder to store the solved puzzle -> appending to it char by char
-            StringBuilder solvedSodukoString = new();
-
-            for (int row = 0; row < SIZE; row++)
-            {
-                for (int col = 0; col < SIZE; col++)
-                {
-                    solvedSodukoString.Append((char)(solvedBoard[row, col] + '0')); // converting back the values to their assigned chars
-                }
-            }
-
-            // printing solved sudoku as string
-            Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
-            Console.ForegroundColor = ConsoleColor.Green; // changing console to green
-
-            // writing the solved sudoku board to the console char by char
-            for (int stringIndex=0;stringIndex<solvedSodukoString.Length;stringIndex++)
-                Console.Write(solvedSodukoString[stringIndex]);
-
-            Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
-
-            // also returning the soduko string (for later tests)
-            return solvedSodukoString.ToString();
-        }
-
-        private static void Cover(Node targetNode) // covering the given node completely -> unlinking it from the mesh
+        // covering the given node completely -> unlinking it from the mesh
+        private static void Cover(Node targetNode) 
         {
             //unlinking node's right links 
             targetNode.left.right = targetNode.right;
@@ -223,7 +179,8 @@ namespace SodukoSolver.DLX
             Node nodeBelow = targetNode.down;
             Node currentNode;
 
-            while (nodeBelow != targetNode) // traversing through the mesh and covering the links of the given node
+            // traversing through the mesh and covering the links of the given node
+            while (nodeBelow != targetNode) 
             {
                 currentNode = nodeBelow.right;
 
@@ -241,7 +198,8 @@ namespace SodukoSolver.DLX
             }
         }
 
-        private static void Uncover(Node targetNode) // uncovering the given node completely -> restoring it to the board, connecting back it's links
+        // uncovering the given node completely -> restoring it to the board, connecting back it's links
+        private static void Uncover(Node targetNode)
         {
             // relink node's right links
             targetNode.left.right = targetNode;
@@ -251,7 +209,8 @@ namespace SodukoSolver.DLX
             Node nodeAbove = targetNode.up;
             Node currentNode;
 
-            while (nodeAbove != targetNode) // traversing through the mesh and uncovering the links of the given node
+            // traversing through the mesh and uncovering the links of the given node
+            while (nodeAbove != targetNode)
             {
                 currentNode = nodeAbove.left;
 
@@ -267,6 +226,61 @@ namespace SodukoSolver.DLX
                 }
                 nodeAbove = nodeAbove.up; // go up a row
             }
+        }
+
+        // converting the solution list back into a matrix and printing the solved sudoku board
+        public string ConvertBackToMatrix()
+        {
+            int[,] solvedBoard = new int[SIZE, SIZE]; // initializing the solved board matrix to be the size of the given board
+
+            foreach (Node node in solution) // go over each node in the solution list 
+            {
+                int minName = node.columnHeader.name; // get the name of the current node's header
+                Node tempNode = node; // set a temp node to be the current node
+
+                // go left to right and search fo the minimal column Header
+                for (Node temp = node.right; temp != node; temp = temp.right)
+                {
+                    int name = temp.columnHeader.name;
+                    if (name < minName) // if a new minimal was found, updating
+                    {
+                        minName = name;
+                        tempNode = temp;
+                    }
+                }
+
+                // the position of the column header in the constraints matrix is the name of tempNode's column header
+                int columnHeaderPos = tempNode.columnHeader.name;
+                // the row of the current node in the constraints matrix is the column header's position divided by the size of the board
+                int row = columnHeaderPos / SIZE;
+                // the column of the current node in the constraints matrix is the column header's position modulo the size of the board
+                int col = columnHeaderPos % SIZE;
+
+                // the value of the current cell in the board is the name of the node to the right of the current node modulo the size of the board
+                solvedBoard[row, col] = tempNode.right.columnHeader.name % SIZE + 1;
+            }
+
+            // creating a string builder to store the solved puzzle -> appending to it char by char
+            StringBuilder solvedSodukoString = new();
+
+            for (int row = 0; row < SIZE; row++)
+            {
+                for (int col = 0; col < SIZE; col++)
+                    solvedSodukoString.Append((char)(solvedBoard[row, col] + '0')); // converting back the values to their assigned chars
+            }
+
+            // printing solved sudoku as string
+            Console.WriteLine("\nTHE SOLVED SODUKO PUZZLE IS:");
+            Console.ForegroundColor = ConsoleColor.Green; // changing console to green
+
+            // writing the solved sudoku board to the console char by char
+            for (int stringIndex = 0; stringIndex < solvedSodukoString.Length; stringIndex++)
+                Console.Write(solvedSodukoString[stringIndex]);
+
+            Console.ResetColor(); // reset console color to default (gray)
+
+            // also returning the soduko string (for later tests)
+            return solvedSodukoString.ToString();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace SodukoSolverTests
             string input1 = "0"; // empty puzzle
             string expectedSolve1 = "1";
 
-            string input2 = "1";
+            string input2 = "1"; 
             string expectedSolve2 = "1";
 
             // Act
@@ -151,6 +151,8 @@ namespace SodukoSolverTests
             string expectedOutput = "\nEnter the file path:\r\n\nError: File not found -> file path should be like C:\\Users\\user\\Downloads\\sudoku_example.txt\r\n";
             StringWriter stringWriter = new();
             Console.SetOut(stringWriter);
+
+            // for a non txt file:
             
             // Act
             _ui.GetInputAsFile();

@@ -3,14 +3,16 @@
 
 namespace SodukoSolver
 {
-    class Program // the main class of the program
+    // the main module of the program
+    class Program 
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("WELCOME TO YOUR SODUKO PUZZLE SOLVER! made by @Ori_Boteach");
-
-            bool wantsAgain = true;
             UI ui = new();
+
+            ui.StartMessage();
+            
+            bool wantsAgain = true;
 
             // displaying a message to the user (by an event) when a keyboard interrupt is detected
             Console.CancelKeyPress += new ConsoleCancelEventHandler(ui.OnKeyboardInterruptEvent);
@@ -47,32 +49,53 @@ namespace SodukoSolver
 
                         // if the user entered an invalid input
                         default:
+                            Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                             Console.WriteLine("Invalid choice, please try again.");
+                            Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                             continue;
                     }
                 }
                 catch (InvalidInputLengthException iile) // catching the thrown exception in case the user entered an invalid length of soduko
                 {
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                     Console.WriteLine(iile.Message);
+                    Console.WriteLine("valid board length sizes are -> 1 / 4 / 9 / 16 / 25");
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                 }
-                catch (InvalidInputCharException iice) // catching the thrown exception in case the user entered  an invalid char for the detected soduko size
+                // catching the thrown exception in case the user entered  an invalid char for the detected soduko size
+                catch (InvalidInputCharException iice)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                     Console.WriteLine(iice.Message);
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                 }
-                catch (InvalidInputPlaceException iipe) // catching the thrown exception in case the user entered an invalid soduko (coliding numbers in the same row / column or cube)
+                // catching the thrown exception in case the user entered an invalid soduko (coliding numbers in the same row / column or cube)
+                catch (InvalidInputPlaceException iipe)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                     Console.WriteLine(iipe.Message);
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                 }
                 catch (ArgumentNullException ane) // catching the thrown exception in case the provided file was empty
                 {
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                     Console.WriteLine(ane.Message);
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
+                }
+                catch (InvalidFileTypeException ife) // catching the thrown exception in case the user entered an invalid file type
+                {
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
+                    Console.WriteLine(ife.Message);
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                 }
                 catch (NullInputException nie) // catching the thrown exception in case the user entered nothing as a file path
                 {
+                    Console.ForegroundColor = ConsoleColor.Red; // changing console to red
                     Console.WriteLine(nie.Message);
+                    Console.ForegroundColor = ConsoleColor.Gray; // changing console back to gray
                     break;
                 }
-
+               
                 Console.WriteLine("\nEnter anything to solve another soduko puzzle or 'q' to quit ");
                 ConsoleKeyInfo UserInput = Console.ReadKey();
                 string answer = UserInput.KeyChar.ToString();
