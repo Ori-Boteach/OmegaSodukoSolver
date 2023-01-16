@@ -5,7 +5,7 @@
     {
         public int name { get; set; } // the name == index of the column header
         public int headerNodeCount { get; set; } // how many nodes there are below the column header
-        public HeaderNode(int name) : base(null) //  NodeHeader object constructor -> set name and init counter with zero
+        public HeaderNode(int name) : base(null) //  NodeHeader object constructor -> sets name, initializes counter to zero and it's header to itself
         {
             columnHeader = this;
             this.name = name;
